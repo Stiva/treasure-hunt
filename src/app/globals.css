@@ -1,26 +1,274 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Frost Blues - Jack Frost inspired */
+  --frost-50: #eff6ff;
+  --frost-100: #dbeafe;
+  --frost-200: #bfdbfe;
+  --frost-300: #93c5fd;
+  --frost-400: #60a5fa;
+  --frost-500: #3b82f6;
+  --frost-600: #2563eb;
+  --frost-700: #1d4ed8;
+
+  /* Sand Golds - Sandman inspired */
+  --sand-50: #fffbeb;
+  --sand-100: #fef3c7;
+  --sand-200: #fde68a;
+  --sand-300: #fcd34d;
+  --sand-400: #fbbf24;
+  --sand-500: #f59e0b;
+  --sand-600: #d97706;
+
+  /* Tooth Teals - Tooth Fairy inspired */
+  --tooth-400: #2dd4bf;
+  --tooth-500: #14b8a6;
+  --tooth-600: #0d9488;
+
+  /* Night Purples - Magical night */
+  --night-700: #6d28d9;
+  --night-800: #5b21b6;
+  --night-900: #4c1d95;
+  --night-950: #2e1065;
+
+  /* Pitch Darks - Pitch Black */
+  --pitch-700: #334155;
+  --pitch-800: #1e293b;
+  --pitch-900: #0f172a;
+  --pitch-950: #020617;
+
+  /* Default theme colors */
+  --background: var(--pitch-950);
+  --foreground: var(--frost-100);
+  --primary: var(--frost-500);
+  --primary-foreground: #ffffff;
+  --secondary: var(--night-800);
+  --secondary-foreground: var(--frost-100);
+  --accent: var(--sand-400);
+  --accent-foreground: var(--pitch-900);
+  --muted: var(--pitch-800);
+  --muted-foreground: var(--frost-300);
+  --card: var(--pitch-900);
+  --card-foreground: var(--frost-100);
+  --border: var(--night-800);
+  --input: var(--pitch-800);
+  --ring: var(--frost-500);
+  --success: var(--sand-400);
+  --error: #ef4444;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Frost colors */
+  --color-frost-50: var(--frost-50);
+  --color-frost-100: var(--frost-100);
+  --color-frost-200: var(--frost-200);
+  --color-frost-300: var(--frost-300);
+  --color-frost-400: var(--frost-400);
+  --color-frost-500: var(--frost-500);
+  --color-frost-600: var(--frost-600);
+  --color-frost-700: var(--frost-700);
+
+  /* Sand colors */
+  --color-sand-50: var(--sand-50);
+  --color-sand-100: var(--sand-100);
+  --color-sand-200: var(--sand-200);
+  --color-sand-300: var(--sand-300);
+  --color-sand-400: var(--sand-400);
+  --color-sand-500: var(--sand-500);
+  --color-sand-600: var(--sand-600);
+
+  /* Night colors */
+  --color-night-700: var(--night-700);
+  --color-night-800: var(--night-800);
+  --color-night-900: var(--night-900);
+  --color-night-950: var(--night-950);
+
+  /* Pitch colors */
+  --color-pitch-700: var(--pitch-700);
+  --color-pitch-800: var(--pitch-800);
+  --color-pitch-900: var(--pitch-900);
+  --color-pitch-950: var(--pitch-950);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(180deg, var(--night-950) 0%, var(--pitch-950) 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Magical animations */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes frostBreath {
+  0%, 100% {
+    filter: blur(0px);
+    opacity: 1;
+  }
+  50% {
+    filter: blur(2px);
+    opacity: 0.8;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(96, 165, 250, 0.8);
+  }
+}
+
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
+.animate-frost-breath {
+  animation: frostBreath 4s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-gold-glow {
+  animation: goldGlow 2s ease-in-out infinite;
+}
+
+/* Frost border effect */
+.frost-border {
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  box-shadow:
+    0 0 10px rgba(96, 165, 250, 0.2),
+    inset 0 0 10px rgba(96, 165, 250, 0.1);
+}
+
+/* Card glass effect */
+.glass-card {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(147, 197, 253, 0.2);
+}
+
+/* Gradient text */
+.text-gradient-frost {
+  background: linear-gradient(135deg, var(--frost-400) 0%, var(--frost-200) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-sand {
+  background: linear-gradient(135deg, var(--sand-400) 0%, var(--sand-200) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button hover glow */
+.btn-frost:hover {
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+}
+
+.btn-sand:hover {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+
+  input, select, textarea {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--pitch-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--night-800);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--night-700);
 }

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@context7/mcp@latest"],
+      "env": {
+        "CONTEXT7_API_KEY": "ctx7sk-34222922-7c91-47bc-b559-8d38853db5da"
+      }
+    }
+  }
+}
