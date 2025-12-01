@@ -17,7 +17,10 @@ export const metadata: Metadata = {
   title: "Caccia al Tesoro - Treasure Hunt",
   description: "Un'avventura magica ti attende - A magical adventure awaits",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/favicon.svg",
   },
 };
 
