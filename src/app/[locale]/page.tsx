@@ -53,7 +53,7 @@ export default function HomePage() {
         <div className="space-y-4">
           {/* Player Login Button */}
           <Link
-            href="/login"
+            href="/play/login"
             className="block w-full py-4 px-6 rounded-xl bg-frost-600 hover:bg-frost-500
                        text-white font-semibold text-lg transition-all duration-300
                        btn-frost frost-border"
@@ -63,7 +63,7 @@ export default function HomePage() {
 
           {/* Help Button */}
           <Link
-            href="/help"
+            href="/play/help"
             className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-xl
                        bg-night-900/50 hover:bg-night-800/50 text-frost-200
                        font-medium transition-all duration-300 frost-border"

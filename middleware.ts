@@ -6,9 +6,16 @@ import { NextResponse } from "next/server";
 const intlMiddleware = createMiddleware(routing);
 
 // Define protected admin routes (require Clerk authentication)
+// Exclude sign-in and sign-up pages from protection
 const isAdminRoute = createRouteMatcher([
-  "/:locale/admin(.*)",
-  "/admin(.*)",
+  "/:locale/admin",
+  "/:locale/admin/sessions(.*)",
+]);
+
+// Define sign-in routes that should NOT be protected
+const isSignInRoute = createRouteMatcher([
+  "/:locale/admin/sign-in(.*)",
+  "/:locale/admin/sign-up(.*)",
 ]);
 
 // Define public routes that don't need any authentication
@@ -42,8 +49,8 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  // For admin pages, require Clerk authentication
-  if (isAdminRoute(req)) {
+  // For admin pages, require Clerk authentication (but not sign-in pages)
+  if (isAdminRoute(req) && !isSignInRoute(req)) {
     await auth.protect();
   }
 

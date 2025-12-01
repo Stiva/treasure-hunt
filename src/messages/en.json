@@ -111,6 +111,11 @@
     "isStart": "Starting Stage",
     "isEnd": "Final Stage",
     "teamName": "Team Name",
-    "assignPlayers": "Assign Players"
+    "assignPlayers": "Assign Players",
+    "edit": "Edit",
+    "delete": "Delete",
+    "editSession": "Edit Session",
+    "noSessions": "No sessions created",
+    "createFirstSession": "Create your first treasure hunt session"
   }
 }

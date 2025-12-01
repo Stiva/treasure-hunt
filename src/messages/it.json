@@ -111,6 +111,11 @@
     "isStart": "Tappa di Partenza",
     "isEnd": "Tappa Finale",
     "teamName": "Nome Squadra",
-    "assignPlayers": "Assegna Giocatori"
+    "assignPlayers": "Assegna Giocatori",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "editSession": "Modifica Sessione",
+    "noSessions": "Nessuna sessione creata",
+    "createFirstSession": "Crea la tua prima sessione di caccia al tesoro"
   }
 }
