@@ -11,7 +11,10 @@ import {
   Activity,
   Menu,
   Snowflake,
+  UserCog,
 } from "lucide-react";
+import { checkAdminAuth, isFirstAdmin } from "@/lib/admin-auth";
+import { updateAdminUserStatus } from "@/lib/db/queries/admin-users";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -26,7 +29,28 @@ export default async function AdminLayout({
   const { locale } = await params;
 
   if (!userId) {
-    redirect(`/${locale}/admin/sign-in`);
+    redirect(`/${locale}/sign-in`);
+  }
+
+  // Check admin approval status
+  const adminAuth = await checkAdminAuth();
+
+  // If this is the first admin (no approved admins exist), auto-approve them
+  const firstAdmin = await isFirstAdmin();
+  if (firstAdmin && !adminAuth.isApproved) {
+    // Get the admin user ID from the database and approve them
+    const { getAdminUserByClerkId } = await import("@/lib/db/queries/admin-users");
+    const adminUser = await getAdminUserByClerkId(userId);
+    if (adminUser) {
+      await updateAdminUserStatus(adminUser.id, "approved", "system-first-admin");
+      // Refresh the page to apply the new status
+      redirect(`/${locale}/admin`);
+    }
+  }
+
+  // Redirect unapproved users to pending page
+  if (!adminAuth.isApproved) {
+    redirect(`/${locale}/admin/pending`);
   }
 
   const t = await getTranslations("admin");
@@ -55,6 +79,9 @@ export default async function AdminLayout({
               </NavLink>
               <NavLink href="/admin/sessions" icon={<MapPin size={18} />}>
                 {t("sessions")}
+              </NavLink>
+              <NavLink href="/admin/users" icon={<UserCog size={18} />}>
+                Utenti
               </NavLink>
             </nav>
 

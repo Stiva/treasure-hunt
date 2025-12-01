@@ -13,6 +13,7 @@ import { relations } from "drizzle-orm";
 
 // Enums
 export const gameModeEnum = pgEnum("game_mode", ["solo", "couples"]);
+export const adminStatusEnum = pgEnum("admin_status", ["pending", "approved", "rejected"]);
 
 // ============================================
 // SESSIONS TABLE
@@ -197,6 +198,25 @@ export const playerSessionsRelations = relations(playerSessions, ({ one }) => ({
 }));
 
 // ============================================
+// ADMIN_USERS TABLE
+// ============================================
+export const adminUsers = pgTable(
+  "admin_users",
+  {
+    id: serial("id").primaryKey(),
+    clerkId: varchar("clerk_id", { length: 255 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    firstName: varchar("first_name", { length: 100 }),
+    lastName: varchar("last_name", { length: 100 }),
+    status: adminStatusEnum("status").notNull().default("pending"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    approvedAt: timestamp("approved_at"),
+    approvedBy: varchar("approved_by", { length: 255 }),
+  },
+  (table) => [uniqueIndex("admin_users_clerk_id_idx").on(table.clerkId)]
+);
+
+// ============================================
 // TYPE EXPORTS
 // ============================================
 export type Session = typeof sessions.$inferSelect;
@@ -216,3 +236,6 @@ export type NewTeamPath = typeof teamPaths.$inferInsert;
 
 export type PlayerSession = typeof playerSessions.$inferSelect;
 export type NewPlayerSession = typeof playerSessions.$inferInsert;
+
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type NewAdminUser = typeof adminUsers.$inferInsert;

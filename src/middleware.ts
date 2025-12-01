@@ -14,8 +14,8 @@ const isAdminRoute = createRouteMatcher([
 
 // Define sign-in routes that should NOT be protected
 const isSignInRoute = createRouteMatcher([
-  "/:locale/admin/sign-in(.*)",
-  "/:locale/admin/sign-up(.*)",
+  "/:locale/sign-in(.*)",
+  "/:locale/sign-up(.*)",
 ]);
 
 // Define public routes that don't need any authentication
@@ -33,6 +33,8 @@ const isApiRoute = createRouteMatcher(["/api(.*)"]);
 const isAdminApiRoute = createRouteMatcher(["/api/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
+  const { pathname } = req.nextUrl;
+
   // For API routes
   if (isApiRoute(req)) {
     // Protect admin API routes with Clerk
@@ -49,9 +51,17 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  // For admin pages, require Clerk authentication (but not sign-in pages)
+  // For admin pages (but not sign-in/sign-up pages), require Clerk authentication
   if (isAdminRoute(req) && !isSignInRoute(req)) {
-    await auth.protect();
+    const { userId } = await auth();
+    if (!userId) {
+      // Get locale from pathname
+      const localeMatch = pathname.match(/^\/(it|en)\//);
+      const locale = localeMatch ? localeMatch[1] : "it";
+      const signInUrl = new URL(`/${locale}/sign-in`, req.url);
+      signInUrl.searchParams.set("redirect_url", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
   }
 
   // Apply i18n middleware for all non-API routes

@@ -1,4 +1,4 @@
-import { NextIntlClientProvider, useMessages } from "next-intl";
+import { NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 
@@ -27,13 +27,11 @@ export default async function LocaleLayout({ children, params }: Props) {
     notFound();
   }
 
+  // NOTE: html/body tags are defined in the root layout (src/app/layout.tsx)
+  // This layout only wraps children with NextIntlClientProvider
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <main className="min-h-screen">{children}</main>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {children}
+    </NextIntlClientProvider>
   );
 }

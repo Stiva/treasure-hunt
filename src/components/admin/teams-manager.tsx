@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { Session, Player } from "@/lib/db/schema";
 import type { TeamWithPlayers } from "@/lib/db/queries/teams";
+import { TeamPathDisplay } from "./team-path-display";
 
 interface TeamsManagerProps {
   session: Session;
@@ -411,6 +412,8 @@ export function TeamsManager({
                     {team.players.length} / {session.gameMode === "couples" ? "2" : "1"} giocatori
                   </p>
                 </div>
+                {/* Team Path Display */}
+                <TeamPathDisplay teamId={team.id} />
               </CardContent>
             </Card>
           ))}

@@ -189,7 +189,7 @@ export function MonitorDashboard({
                         </div>
                       )}
 
-                      {/* Stage Progress Dots */}
+                      {/* Stage Progress with Location Codes */}
                       {team.path.length > 0 && (
                         <div className="flex items-center gap-1 flex-wrap">
                           {team.path.map((p, stageIdx) => (
@@ -198,23 +198,23 @@ export function MonitorDashboard({
                               className="flex items-center gap-1"
                             >
                               {stageIdx > 0 && (
-                                <div className="w-2 h-0.5 bg-night-700" />
+                                <span className="text-frost-600 text-xs">→</span>
                               )}
-                              <div
-                                className={`w-3 h-3 rounded-full flex items-center justify-center ${
+                              <span
+                                className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
                                   stageIdx < team.currentStage ||
                                   team.finishedAt
-                                    ? "bg-green-500"
+                                    ? "bg-green-500/20 text-green-400"
                                     : stageIdx === team.currentStage
-                                    ? "bg-sand-500"
-                                    : "bg-night-700"
+                                    ? "bg-sand-500/20 text-sand-400"
+                                    : "bg-night-700 text-frost-500"
                                 }`}
-                                title={
-                                  locale === "it"
-                                    ? p.location.nameIt
-                                    : p.location.nameEn
-                                }
-                              />
+                                title={p.location.code}
+                              >
+                                {locale === "it"
+                                  ? p.location.nameIt
+                                  : p.location.nameEn}
+                              </span>
                             </div>
                           ))}
                         </div>

@@ -133,8 +133,9 @@ export function LocationForm({
               required
             />
             <p className="text-xs text-frost-500">
-              Il codice che i giocatori troveranno fisicamente nella tappa. Solo
-              lettere maiuscole, numeri, trattini e underscore.
+              La parola chiave segreta che i giocatori dovranno inserire per
+              sbloccare la tappa successiva. Solo lettere maiuscole, numeri,
+              trattini e underscore.
             </p>
           </div>
 

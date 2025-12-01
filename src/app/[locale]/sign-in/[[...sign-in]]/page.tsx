@@ -10,9 +10,9 @@ export default async function SignInPage({ params }: SignInPageProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-night-950 to-pitch-950 p-4">
       <SignIn
-        path={`/${locale}/admin/sign-in`}
+        path={`/${locale}/sign-in`}
         routing="path"
-        signUpUrl={`/${locale}/admin/sign-up`}
+        signUpUrl={`/${locale}/sign-up`}
         forceRedirectUrl={`/${locale}/admin`}
         appearance={{
           elements: {

@@ -1,7 +1,13 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { getSessionById, getLocationsBySessionId, getTeamsBySessionId, getPlayersBySessionId } from "@/lib/db/queries";
+import {
+  getSessionById,
+  getLocationsBySessionId,
+  getTeamsBySessionId,
+  getPlayersBySessionId,
+  hasTeamPaths,
+} from "@/lib/db/queries";
 import {
   Card,
   CardHeader,
@@ -10,6 +16,7 @@ import {
   Button,
 } from "@/components/ui";
 import { SessionActions } from "@/components/admin/session-actions";
+import { PathGenerator } from "@/components/admin/path-generator";
 import {
   ArrowLeft,
   MapPin,
@@ -52,6 +59,15 @@ export default async function SessionDetailPage({
   const startLocation = locations.find((l) => l.isStart);
   const endLocation = locations.find((l) => l.isEnd);
   const intermediateLocations = locations.filter((l) => !l.isStart && !l.isEnd);
+
+  // Check how many teams have paths generated
+  const teamsWithPathsResults = await Promise.all(
+    teams.map(async (team) => {
+      const hasPaths = await hasTeamPaths(team.id);
+      return hasPaths ? 1 : 0;
+    })
+  );
+  const teamsWithPathsCount = teamsWithPathsResults.reduce((a: number, b: number) => a + b, 0);
 
   return (
     <div className="space-y-6">
@@ -206,6 +222,16 @@ export default async function SessionDetailPage({
         </Link>
       </div>
 
+      {/* Path Generator */}
+      <PathGenerator
+        sessionId={session.id}
+        teamsCount={teams.length}
+        locationsCount={locations.length}
+        hasStart={!!startLocation}
+        hasEnd={!!endLocation}
+        teamsWithPaths={teamsWithPathsCount}
+      />
+
       {/* Session Setup Checklist */}
       <Card variant="frost">
         <CardHeader>
@@ -236,6 +262,10 @@ export default async function SessionDetailPage({
             <ChecklistItem
               done={teams.every((t) => t.players.length > 0)}
               label="Tutti i giocatori assegnati a squadre"
+            />
+            <ChecklistItem
+              done={teamsWithPathsCount === teams.length && teams.length > 0}
+              label={`Percorsi generati (${teamsWithPathsCount}/${teams.length})`}
             />
           </ul>
         </CardContent>
