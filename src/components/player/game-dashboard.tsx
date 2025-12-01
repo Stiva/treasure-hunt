@@ -23,6 +23,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { ChatButton } from "./chat-button";
+import { MapButton } from "./map-button";
 import type { Player, Team, Location } from "@/lib/db/schema";
 
 interface GameState {
@@ -228,6 +229,7 @@ export function GameDashboard({
             </Button>
           </CardContent>
         </Card>
+        <MapButton locale={locale} />
         <ChatButton locale={locale} />
       </div>
     );
@@ -264,6 +266,7 @@ export function GameDashboard({
             </Button>
           </CardContent>
         </Card>
+        <MapButton locale={locale} />
         <ChatButton locale={locale} />
       </div>
     );
@@ -447,6 +450,7 @@ export function GameDashboard({
           </CardContent>
         </Card>
       </div>
+      <MapButton locale={locale} />
       <ChatButton locale={locale} />
     </div>
   );
