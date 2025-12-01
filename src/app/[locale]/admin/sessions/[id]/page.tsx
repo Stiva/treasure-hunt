@@ -27,6 +27,7 @@ import {
   Settings,
   CheckCircle,
   XCircle,
+  MessageCircle,
 } from "lucide-react";
 
 interface SessionDetailPageProps {
@@ -142,7 +143,7 @@ export default async function SessionDetailPage({
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Link href={`/admin/sessions/${session.id}/locations`}>
           <Card variant="frost" className="hover:border-frost-600/50 transition-colors cursor-pointer h-full">
             <CardContent className="py-4">
@@ -214,6 +215,24 @@ export default async function SessionDetailPage({
                   <h3 className="font-medium text-frost-100">Monitoraggio</h3>
                   <p className="text-xs text-frost-500">
                     Visualizza progresso in tempo reale
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href={`/admin/sessions/${session.id}/support`}>
+          <Card variant="frost" className="hover:border-frost-600/50 transition-colors cursor-pointer h-full">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-frost-600/20">
+                  <MessageCircle className="h-5 w-5 text-frost-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-frost-100">Supporto</h3>
+                  <p className="text-xs text-frost-500">
+                    Messaggi dei giocatori
                   </p>
                 </div>
               </div>

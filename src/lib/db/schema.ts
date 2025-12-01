@@ -8,6 +8,8 @@ import {
   timestamp,
   uniqueIndex,
   pgEnum,
+  jsonb,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -217,6 +219,58 @@ export const adminUsers = pgTable(
 );
 
 // ============================================
+// SUPPORT_MESSAGES TABLE
+// ============================================
+export const supportMessages = pgTable(
+  "support_messages",
+  {
+    id: serial("id").primaryKey(),
+    sessionId: integer("session_id")
+      .notNull()
+      .references(() => sessions.id, { onDelete: "cascade" }),
+    teamId: integer("team_id")
+      .notNull()
+      .references(() => teams.id, { onDelete: "cascade" }),
+    playerId: integer("player_id").references(() => players.id, {
+      onDelete: "set null",
+    }),
+    adminUserId: integer("admin_user_id").references(() => adminUsers.id, {
+      onDelete: "set null",
+    }),
+    message: text("message").notNull(),
+    attachmentUrl: varchar("attachment_url", { length: 500 }),
+    attachmentType: varchar("attachment_type", { length: 20 }), // 'image' | 'video'
+    isFromAdmin: boolean("is_from_admin").notNull().default(false),
+    isRead: boolean("is_read").notNull().default(false),
+    gameContext: jsonb("game_context"), // {teamName, currentStage, totalStages, locationName}
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("support_messages_session_idx").on(table.sessionId),
+    index("support_messages_team_idx").on(table.teamId),
+  ]
+);
+
+export const supportMessagesRelations = relations(supportMessages, ({ one }) => ({
+  session: one(sessions, {
+    fields: [supportMessages.sessionId],
+    references: [sessions.id],
+  }),
+  team: one(teams, {
+    fields: [supportMessages.teamId],
+    references: [teams.id],
+  }),
+  player: one(players, {
+    fields: [supportMessages.playerId],
+    references: [players.id],
+  }),
+  adminUser: one(adminUsers, {
+    fields: [supportMessages.adminUserId],
+    references: [adminUsers.id],
+  }),
+}));
+
+// ============================================
 // TYPE EXPORTS
 // ============================================
 export type Session = typeof sessions.$inferSelect;
@@ -239,3 +293,13 @@ export type NewPlayerSession = typeof playerSessions.$inferInsert;
 
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type NewAdminUser = typeof adminUsers.$inferInsert;
+
+export type SupportMessage = typeof supportMessages.$inferSelect;
+export type NewSupportMessage = typeof supportMessages.$inferInsert;
+
+export interface GameContext {
+  teamName: string;
+  currentStage: number;
+  totalStages: number;
+  locationName?: string;
+}
