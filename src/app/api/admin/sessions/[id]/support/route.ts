@@ -48,10 +48,31 @@ export async function GET(
     const messagesByTeam = await getMessagesBySession(sessionId);
     const unreadCount = await getUnreadCountBySession(sessionId);
 
+    // Serialize dates properly for JSON response
+    const serializedData = messagesByTeam.map((team) => ({
+      ...team,
+      lastMessage: team.lastMessage
+        ? {
+            ...team.lastMessage,
+            createdAt:
+              team.lastMessage.createdAt instanceof Date
+                ? team.lastMessage.createdAt.toISOString()
+                : team.lastMessage.createdAt,
+          }
+        : null,
+      messages: team.messages.map((msg) => ({
+        ...msg,
+        createdAt:
+          msg.createdAt instanceof Date
+            ? msg.createdAt.toISOString()
+            : msg.createdAt,
+      })),
+    }));
+
     return NextResponse.json({
       success: true,
       data: {
-        messagesByTeam,
+        messagesByTeam: serializedData,
         unreadCount,
       },
     });

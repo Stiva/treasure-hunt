@@ -50,39 +50,22 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
       const response = await fetch(`/api/admin/sessions/${sessionId}/support`);
       const data = await response.json();
       if (data.success) {
-        // Transform messagesByTeam to threads
-        const teamsMap = new Map<number, TeamThread>();
-
-        for (const msg of data.data.messagesByTeam) {
-          if (!teamsMap.has(msg.teamId)) {
-            teamsMap.set(msg.teamId, {
-              teamId: msg.teamId,
-              teamName: msg.team?.name || `Team ${msg.teamId}`,
-              messages: [],
-              unreadCount: 0,
-              lastMessageAt: msg.createdAt,
-            });
-          }
-
-          const thread = teamsMap.get(msg.teamId)!;
-          thread.messages.push(msg);
-
-          // Count unread messages from players
-          if (!msg.isFromAdmin && !msg.isRead) {
-            thread.unreadCount++;
-          }
-
-          // Update last message time
-          if (new Date(msg.createdAt) > new Date(thread.lastMessageAt)) {
-            thread.lastMessageAt = msg.createdAt;
-          }
-        }
-
-        // Convert to array and sort by last message time
-        const threadList = Array.from(teamsMap.values()).sort(
-          (a, b) =>
-            new Date(b.lastMessageAt).getTime() -
-            new Date(a.lastMessageAt).getTime()
+        // API returns TeamWithMessages[] directly - use it as-is
+        const threadList: TeamThread[] = data.data.messagesByTeam.map(
+          (team: {
+            teamId: number;
+            teamName: string;
+            unreadCount: number;
+            lastMessage: Message | null;
+            messages: Message[];
+          }) => ({
+            teamId: team.teamId,
+            teamName: team.teamName,
+            messages: team.messages,
+            unreadCount: team.unreadCount,
+            lastMessageAt:
+              team.lastMessage?.createdAt || new Date().toISOString(),
+          })
         );
 
         setThreads(threadList);
