@@ -18,6 +18,7 @@ import {
   Pencil,
   GripVertical,
 } from "lucide-react";
+import { LocationsMapToggle } from "@/components/admin/locations-page-client";
 
 interface LocationsPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -72,6 +73,11 @@ export default async function LocationsPage({ params }: LocationsPageProps) {
           </Button>
         </Link>
       </div>
+
+      {/* Map Toggle */}
+      {locations.length > 0 && (
+        <LocationsMapToggle locations={locations} locale={locale} />
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
