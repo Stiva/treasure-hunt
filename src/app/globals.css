@@ -1,63 +1,99 @@
 @import "tailwindcss";
 
+/* ===========================================
+   TEMA NORD / BABBO NATALE - Minimalismo Evoluto
+   =========================================== */
+
 :root {
-  /* Frost Blues - Jack Frost inspired */
-  --frost-50: #eff6ff;
-  --frost-100: #dbeafe;
-  --frost-200: #bfdbfe;
-  --frost-300: #93c5fd;
-  --frost-400: #60a5fa;
-  --frost-500: #3b82f6;
-  --frost-600: #2563eb;
-  --frost-700: #1d4ed8;
+  /* ========== Light Mode (Default) ========== */
 
-  /* Sand Golds - Sandman inspired */
-  --sand-50: #fffbeb;
-  --sand-100: #fef3c7;
-  --sand-200: #fde68a;
-  --sand-300: #fcd34d;
-  --sand-400: #fbbf24;
-  --sand-500: #f59e0b;
-  --sand-600: #d97706;
+  /* Base colors */
+  --background: #fafafa;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --border: #e5e5e5;
+  --input: #ffffff;
+  --ring: #dc2626;
 
-  /* Tooth Teals - Tooth Fairy inspired */
-  --tooth-400: #2dd4bf;
-  --tooth-500: #14b8a6;
-  --tooth-600: #0d9488;
-
-  /* Night Purples - Magical night */
-  --night-700: #6d28d9;
-  --night-800: #5b21b6;
-  --night-900: #4c1d95;
-  --night-950: #2e1065;
-
-  /* Pitch Darks - Pitch Black */
-  --pitch-700: #334155;
-  --pitch-800: #1e293b;
-  --pitch-900: #0f172a;
-  --pitch-950: #020617;
-
-  /* Default theme colors */
-  --background: var(--pitch-950);
-  --foreground: var(--frost-100);
-  --primary: var(--frost-500);
+  /* Christmas / Nord accent colors */
+  --primary: #dc2626;              /* Rosso Babbo Natale */
   --primary-foreground: #ffffff;
-  --secondary: var(--night-800);
-  --secondary-foreground: var(--frost-100);
-  --accent: var(--sand-400);
-  --accent-foreground: var(--pitch-900);
-  --muted: var(--pitch-800);
-  --muted-foreground: var(--frost-300);
-  --card: var(--pitch-900);
-  --card-foreground: var(--frost-100);
-  --border: var(--night-800);
-  --input: var(--pitch-800);
-  --ring: var(--frost-500);
-  --success: var(--sand-400);
+  --secondary: #166534;            /* Verde abete */
+  --secondary-foreground: #ffffff;
+  --accent: #eab308;               /* Oro stella */
+  --accent-foreground: #171717;
+
+  /* Status colors */
+  --success: #22c55e;
   --error: #ef4444;
+
+  /* Legacy compatibility - mapped to new colors */
+  --frost-100: var(--foreground);
+  --frost-200: var(--foreground);
+  --frost-300: var(--muted-foreground);
+  --frost-400: var(--muted-foreground);
+  --frost-500: var(--primary);
+  --frost-600: var(--primary);
+  --sand-400: var(--accent);
+  --sand-500: var(--accent);
+  --night-700: var(--border);
+  --night-800: var(--muted);
+  --night-900: var(--card);
+  --night-950: var(--background);
+  --pitch-800: var(--muted);
+  --pitch-900: var(--card);
+  --pitch-950: var(--background);
+}
+
+.dark {
+  /* ========== Dark Mode ========== */
+
+  /* Base colors */
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #171717;
+  --card-foreground: #fafafa;
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+  --border: #2d2d2d;
+  --input: #171717;
+  --ring: #ef4444;
+
+  /* Christmas / Nord accent colors - brighter for dark mode */
+  --primary: #ef4444;              /* Rosso brillante */
+  --primary-foreground: #ffffff;
+  --secondary: #22c55e;            /* Verde brillante */
+  --secondary-foreground: #ffffff;
+  --accent: #facc15;               /* Oro brillante */
+  --accent-foreground: #171717;
+
+  /* Status colors */
+  --success: #22c55e;
+  --error: #ef4444;
+
+  /* Legacy compatibility - mapped to new colors */
+  --frost-100: var(--foreground);
+  --frost-200: var(--foreground);
+  --frost-300: var(--muted-foreground);
+  --frost-400: var(--muted-foreground);
+  --frost-500: var(--primary);
+  --frost-600: var(--primary);
+  --sand-400: var(--accent);
+  --sand-500: var(--accent);
+  --night-700: var(--border);
+  --night-800: var(--muted);
+  --night-900: var(--card);
+  --night-950: var(--background);
+  --pitch-800: var(--muted);
+  --pitch-900: var(--card);
+  --pitch-950: var(--background);
 }
 
 @theme inline {
+  /* Theme colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
@@ -73,37 +109,34 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-error: var(--error);
 
-  /* Frost colors */
-  --color-frost-50: var(--frost-50);
-  --color-frost-100: var(--frost-100);
-  --color-frost-200: var(--frost-200);
-  --color-frost-300: var(--frost-300);
-  --color-frost-400: var(--frost-400);
-  --color-frost-500: var(--frost-500);
-  --color-frost-600: var(--frost-600);
-  --color-frost-700: var(--frost-700);
+  /* Legacy frost colors - for backwards compatibility */
+  --color-frost-100: var(--foreground);
+  --color-frost-200: var(--foreground);
+  --color-frost-300: var(--muted-foreground);
+  --color-frost-400: var(--muted-foreground);
+  --color-frost-500: var(--primary);
+  --color-frost-600: var(--primary);
+  --color-frost-700: var(--primary);
 
-  /* Sand colors */
-  --color-sand-50: var(--sand-50);
-  --color-sand-100: var(--sand-100);
-  --color-sand-200: var(--sand-200);
-  --color-sand-300: var(--sand-300);
-  --color-sand-400: var(--sand-400);
-  --color-sand-500: var(--sand-500);
-  --color-sand-600: var(--sand-600);
+  /* Legacy sand colors */
+  --color-sand-400: var(--accent);
+  --color-sand-500: var(--accent);
+  --color-sand-600: var(--accent);
 
-  /* Night colors */
-  --color-night-700: var(--night-700);
-  --color-night-800: var(--night-800);
-  --color-night-900: var(--night-900);
-  --color-night-950: var(--night-950);
+  /* Legacy night colors */
+  --color-night-700: var(--border);
+  --color-night-800: var(--muted);
+  --color-night-900: var(--card);
+  --color-night-950: var(--background);
 
-  /* Pitch colors */
-  --color-pitch-700: var(--pitch-700);
-  --color-pitch-800: var(--pitch-800);
-  --color-pitch-900: var(--pitch-900);
-  --color-pitch-950: var(--pitch-950);
+  /* Legacy pitch colors */
+  --color-pitch-700: var(--border);
+  --color-pitch-800: var(--muted);
+  --color-pitch-900: var(--card);
+  --color-pitch-950: var(--background);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -114,21 +147,25 @@
 }
 
 body {
-  background: linear-gradient(180deg, var(--night-950) 0%, var(--pitch-950) 100%);
+  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Magical animations */
+/* ===========================================
+   ANIMAZIONI - Mantenute ma più sottili
+   =========================================== */
+
 @keyframes sparkle {
   0%, 100% {
     opacity: 1;
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
-    transform: scale(1.1);
+    opacity: 0.7;
+    transform: scale(1.05);
   }
 }
 
@@ -137,45 +174,26 @@ body {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes frostBreath {
-  0%, 100% {
-    filter: blur(0px);
-    opacity: 1;
-  }
-  50% {
-    filter: blur(2px);
-    opacity: 0.8;
+    transform: translateY(-6px);
   }
 }
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(96, 165, 250, 0.8);
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.5);
   }
 }
 
+
 @keyframes goldGlow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
+    box-shadow: 0 0 25px rgba(234, 179, 8, 0.5);
   }
 }
 
@@ -187,15 +205,6 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
-.animate-shimmer {
-  animation: shimmer 2s linear infinite;
-  background-size: 200% 100%;
-}
-
-.animate-frost-breath {
-  animation: frostBreath 4s ease-in-out infinite;
-}
-
 .animate-glow {
   animation: glow 2s ease-in-out infinite;
 }
@@ -204,46 +213,110 @@ body {
   animation: goldGlow 2s ease-in-out infinite;
 }
 
-/* Frost border effect */
-.frost-border {
-  border: 1px solid rgba(147, 197, 253, 0.3);
+/* ===========================================
+   EFFETTI CARD - Stile Apple-like
+   =========================================== */
+
+/* Soft shadow for cards */
+.card-shadow {
   box-shadow:
-    0 0 10px rgba(96, 165, 250, 0.2),
-    inset 0 0 10px rgba(96, 165, 250, 0.1);
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.04);
 }
 
-/* Card glass effect */
+.dark .card-shadow {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 4px 6px rgba(0, 0, 0, 0.15),
+    0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Glass card - more subtle */
 .glass-card {
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(147, 197, 253, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Gradient text */
+.dark .glass-card {
+  background: rgba(23, 23, 23, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Legacy frost-border - now subtle */
+.frost-border {
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dark .frost-border {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ===========================================
+   GRADIENT TEXT
+   =========================================== */
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, #f87171 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, #fde047 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Legacy gradients - mapped to new ones */
 .text-gradient-frost {
-  background: linear-gradient(135deg, var(--frost-400) 0%, var(--frost-200) 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #f87171 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-sand {
-  background: linear-gradient(135deg, var(--sand-400) 0%, var(--sand-200) 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #fde047 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Button hover glow */
+/* ===========================================
+   BUTTON EFFECTS
+   =========================================== */
+
+.btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+
+.dark .btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.btn-accent:hover {
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.35);
+}
+
+/* Legacy button classes */
 .btn-frost:hover {
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
 }
 
 .btn-sand:hover {
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.35);
 }
 
-/* Mobile optimizations */
+/* ===========================================
+   MOBILE OPTIMIZATIONS
+   =========================================== */
+
 @media (max-width: 640px) {
   body {
     font-size: 16px;
@@ -254,21 +327,35 @@ body {
   }
 }
 
-/* Scrollbar styling */
+/* ===========================================
+   SCROLLBAR - Più sottile e neutro
+   =========================================== */
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--pitch-900);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--night-800);
-  border-radius: 4px;
+  background: var(--muted-foreground);
+  border-radius: 3px;
+  opacity: 0.5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--night-700);
+  background: var(--foreground);
+  opacity: 0.7;
+}
+
+/* ===========================================
+   UTILITIES
+   =========================================== */
+
+/* Smooth transitions for theme change */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

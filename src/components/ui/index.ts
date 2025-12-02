@@ -11,3 +11,4 @@ export {
   CardDescription,
   CardContent,
 } from "./card";
+export { ThemeToggle } from "./theme-toggle";

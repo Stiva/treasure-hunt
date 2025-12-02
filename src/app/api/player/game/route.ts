@@ -36,6 +36,9 @@ export async function GET() {
     const path = await getTeamPath(team.id);
 
     // Get localized content
+    // Include GPS coordinates only if gpsHintEnabled is true
+    const gpsHintEnabled = gameState.team.gpsHintEnabled;
+
     return successResponse({
       team: {
         id: gameState.team.id,
@@ -45,6 +48,7 @@ export async function GET() {
         lastHintRequestedAt: gameState.team.lastHintRequestedAt,
         startedAt: gameState.team.startedAt,
         finishedAt: gameState.team.finishedAt,
+        gpsHintEnabled: gpsHintEnabled,
       },
       currentLocation: gameState.currentLocation,
       nextLocation: gameState.nextLocation
@@ -63,6 +67,13 @@ export async function GET() {
             hint3En: gameState.nextLocation.hint3En,
             isStart: gameState.nextLocation.isStart,
             isEnd: gameState.nextLocation.isEnd,
+            // Include GPS coordinates only if admin has enabled GPS hint
+            ...(gpsHintEnabled && gameState.nextLocation.latitude && gameState.nextLocation.longitude
+              ? {
+                  latitude: gameState.nextLocation.latitude,
+                  longitude: gameState.nextLocation.longitude,
+                }
+              : {}),
           }
         : null,
       totalStages: gameState.totalStages,

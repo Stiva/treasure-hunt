@@ -33,6 +33,12 @@ interface TeamThread {
   messages: Message[];
   unreadCount: number;
   lastMessageAt: string;
+  gpsHintEnabled: boolean;
+  currentStage: number;
+  nextLocationCoords: {
+    latitude: string | null;
+    longitude: string | null;
+  } | null;
 }
 
 interface SupportPanelProps {
@@ -58,6 +64,9 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
             unreadCount: number;
             lastMessage: Message | null;
             messages: Message[];
+            gpsHintEnabled: boolean;
+            currentStage: number;
+            nextLocationCoords: { latitude: string | null; longitude: string | null } | null;
           }) => ({
             teamId: team.teamId,
             teamName: team.teamName,
@@ -65,6 +74,9 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
             unreadCount: team.unreadCount,
             lastMessageAt:
               team.lastMessage?.createdAt || new Date().toISOString(),
+            gpsHintEnabled: team.gpsHintEnabled,
+            currentStage: team.currentStage,
+            nextLocationCoords: team.nextLocationCoords,
           })
         );
 
@@ -123,6 +135,30 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
       await fetchMessages();
     } catch (err) {
       console.error("Error marking as read:", err);
+    }
+  };
+
+  const handleToggleGpsHint = async (teamId: number, enabled: boolean) => {
+    try {
+      const response = await fetch(
+        `/api/admin/sessions/${sessionId}/teams/${teamId}/gps-hint`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        // Update local state
+        setThreads((prev) =>
+          prev.map((t) =>
+            t.teamId === teamId ? { ...t, gpsHintEnabled: enabled } : t
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error toggling GPS hint:", err);
     }
   };
 
@@ -205,6 +241,7 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
           <SupportThread
             thread={selectedThread}
             onSendMessage={handleSendMessage}
+            onToggleGpsHint={handleToggleGpsHint}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-night-800 rounded-lg border border-frost-500/20">

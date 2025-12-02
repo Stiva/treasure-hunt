@@ -115,6 +115,7 @@ export async function updateTeamProgress(
       currentStage,
       hintsUsedCurrentStage: 0,
       lastHintRequestedAt: null,
+      gpsHintEnabled: false,
     })
     .where(eq(teams.id, teamId))
     .returning();

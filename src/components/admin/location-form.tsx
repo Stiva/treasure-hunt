@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui";
-import { Loader2, Info } from "lucide-react";
+import { Loader2, Info, MapPin } from "lucide-react";
 import type { Location } from "@/lib/db/schema";
 
 interface LocationFormProps {
@@ -48,6 +48,8 @@ export function LocationForm({
     hint2En: location?.hint2En || "",
     hint3It: location?.hint3It || "",
     hint3En: location?.hint3En || "",
+    latitude: location?.latitude || "",
+    longitude: location?.longitude || "",
     isStart: location?.isStart || false,
     isEnd: location?.isEnd || false,
     orderIndex: location?.orderIndex ?? locationsCount,
@@ -336,6 +338,52 @@ export function LocationForm({
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* GPS Position */}
+      <Card variant="frost">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-frost-400" />
+            Posizione GPS
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-3 rounded-lg bg-frost-600/10 border border-frost-600/20">
+            <div className="flex gap-2">
+              <Info className="h-4 w-4 text-frost-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-frost-400">
+                Opzionale. Se compilato, l'admin potrà condividere questa posizione
+                con una squadra come hint speciale (non conta come uno dei 3 indizi standard).
+                I giocatori vedranno un marker sulla loro mappa.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="latitude">Latitudine</Label>
+              <Input
+                id="latitude"
+                value={formData.latitude}
+                onChange={(e) => updateField("latitude", e.target.value)}
+                placeholder="Es: 45.4642"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="longitude">Longitudine</Label>
+              <Input
+                id="longitude"
+                value={formData.longitude}
+                onChange={(e) => updateField("longitude", e.target.value)}
+                placeholder="Es: 9.1900"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-frost-500">
+            Puoi trovare le coordinate cercando il luogo su Google Maps e copiando
+            latitudine e longitudine dall'URL o cliccando con il tasto destro sul punto.
+          </p>
         </CardContent>
       </Card>
 

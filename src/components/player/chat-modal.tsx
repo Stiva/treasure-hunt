@@ -204,20 +204,20 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md h-[80vh] sm:h-[600px] bg-night-800 border border-frost-500/20 rounded-t-2xl sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+      <div className="relative w-full max-w-md h-[80vh] sm:h-[600px] bg-card border border-border rounded-t-2xl sm:rounded-2xl flex flex-col overflow-hidden shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-frost-500/20">
-          <h2 className="text-lg font-semibold text-white">{t.title}</h2>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">{t.title}</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-frost-500/20 transition-colors"
+            className="p-1 rounded-full hover:bg-muted transition-colors"
           >
-            <X className="h-5 w-5 text-frost-300" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -225,10 +225,10 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin text-frost-400" />
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-frost-400 text-center px-4">
+            <div className="flex items-center justify-center h-full text-muted-foreground text-center px-4">
               {t.noMessages}
             </div>
           ) : (
@@ -242,13 +242,13 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                     msg.isFromAdmin
-                      ? "bg-frost-500/20 text-white"
-                      : "bg-frost-500 text-white"
+                      ? "bg-muted text-foreground"
+                      : "bg-primary text-primary-foreground"
                   }`}
                 >
                   {/* Sender name */}
                   <div className={`text-xs mb-1 ${
-                    msg.isFromAdmin ? "text-frost-300" : "text-frost-100"
+                    msg.isFromAdmin ? "text-muted-foreground" : "text-primary-foreground/80"
                   }`}>
                     {msg.isFromAdmin
                       ? msg.adminUser?.name || t.admin
@@ -289,7 +289,7 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
                 </div>
 
                 {/* Time */}
-                <span className={`text-xs text-frost-500 mt-1 ${
+                <span className={`text-xs text-muted-foreground mt-1 ${
                   msg.isFromAdmin ? "ml-2" : "mr-2"
                 }`}>
                   {formatTime(msg.createdAt)}
@@ -302,14 +302,14 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
 
         {/* Error message */}
         {error && (
-          <div className="px-4 py-2 bg-red-500/20 text-red-400 text-sm text-center">
+          <div className="px-4 py-2 bg-error/10 text-error text-sm text-center">
             {error}
           </div>
         )}
 
         {/* Attachment preview */}
         {attachment && (
-          <div className="px-4 py-2 border-t border-frost-500/20 bg-night-700">
+          <div className="px-4 py-2 border-t border-border bg-muted">
             <div className="relative inline-block">
               {attachment.type === "image" ? (
                 <img
@@ -318,13 +318,13 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
                   className="h-16 w-16 object-cover rounded-lg"
                 />
               ) : (
-                <div className="h-16 w-16 bg-frost-500/20 rounded-lg flex items-center justify-center">
-                  <Video className="h-8 w-8 text-frost-400" />
+                <div className="h-16 w-16 bg-muted rounded-lg flex items-center justify-center">
+                  <Video className="h-8 w-8 text-muted-foreground" />
                 </div>
               )}
               <button
                 onClick={() => setAttachment(null)}
-                className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1"
+                className="absolute -top-2 -right-2 bg-error rounded-full p-1"
               >
                 <X className="h-3 w-3 text-white" />
               </button>
@@ -333,7 +333,7 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
         )}
 
         {/* Input */}
-        <div className="p-4 border-t border-frost-500/20">
+        <div className="p-4 border-t border-border">
           <div className="flex items-end gap-2">
             {/* File input */}
             <input
@@ -346,12 +346,12 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="p-2 rounded-full hover:bg-frost-500/20 transition-colors disabled:opacity-50"
+              className="p-2 rounded-full hover:bg-muted transition-colors disabled:opacity-50"
             >
               {isUploading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-frost-400" />
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : (
-                <Paperclip className="h-5 w-5 text-frost-400" />
+                <Paperclip className="h-5 w-5 text-muted-foreground" />
               )}
             </button>
 
@@ -362,7 +362,7 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
               onKeyDown={handleKeyDown}
               placeholder={t.placeholder}
               rows={1}
-              className="flex-1 resize-none bg-night-700 border border-frost-500/20 rounded-xl px-4 py-2 text-white placeholder-frost-500 focus:outline-none focus:border-frost-400 min-h-[40px] max-h-[120px]"
+              className="flex-1 resize-none bg-muted border border-border rounded-xl px-4 py-2 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring min-h-[40px] max-h-[120px]"
               style={{ height: "auto" }}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;

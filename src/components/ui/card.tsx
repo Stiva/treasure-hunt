@@ -2,22 +2,23 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "glass" | "frost";
+  variant?: "default" | "glass" | "elevated" | "frost";
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", ...props }, ref) => {
     const variants = {
-      default: "bg-pitch-900 border border-night-800",
+      default: "bg-card border border-border",
       glass: "glass-card",
-      frost: "bg-pitch-900 frost-border",
+      elevated: "bg-card card-shadow",
+      frost: "bg-card card-shadow border border-border", // Legacy alias
     };
 
     return (
       <div
         ref={ref}
         className={cn(
-          "rounded-xl p-6",
+          "rounded-2xl p-6 transition-all duration-200",
           variants[variant],
           className
         )}
@@ -47,7 +48,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-xl font-semibold leading-none tracking-tight text-frost-100",
+      "text-xl font-semibold leading-none tracking-tight text-card-foreground",
       className
     )}
     {...props}
@@ -61,7 +62,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-frost-400", className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));

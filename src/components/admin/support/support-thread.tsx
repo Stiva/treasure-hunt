@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, MapPin, Flag } from "lucide-react";
+import { Send, Loader2, MapPin, Flag, Navigation } from "lucide-react";
 import { Button, Input } from "@/components/ui";
 
 interface Message {
@@ -33,16 +33,24 @@ interface TeamThread {
   messages: Message[];
   unreadCount: number;
   lastMessageAt: string;
+  gpsHintEnabled: boolean;
+  currentStage: number;
+  nextLocationCoords: {
+    latitude: string | null;
+    longitude: string | null;
+  } | null;
 }
 
 interface SupportThreadProps {
   thread: TeamThread;
   onSendMessage: (message: string) => Promise<void>;
+  onToggleGpsHint: (teamId: number, enabled: boolean) => Promise<void>;
 }
 
-export function SupportThread({ thread, onSendMessage }: SupportThreadProps) {
+export function SupportThread({ thread, onSendMessage, onToggleGpsHint }: SupportThreadProps) {
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isTogglingGps, setIsTogglingGps] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -71,6 +79,17 @@ export function SupportThread({ thread, onSendMessage }: SupportThreadProps) {
       handleSend();
     }
   };
+
+  const handleToggleGps = async () => {
+    setIsTogglingGps(true);
+    try {
+      await onToggleGpsHint(thread.teamId, !thread.gpsHintEnabled);
+    } finally {
+      setIsTogglingGps(false);
+    }
+  };
+
+  const hasGpsCoordinates = thread.nextLocationCoords?.latitude && thread.nextLocationCoords?.longitude;
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -105,7 +124,34 @@ export function SupportThread({ thread, onSendMessage }: SupportThreadProps) {
     <div className="flex flex-col h-full bg-night-800 rounded-lg border border-frost-500/20 overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-frost-500/20 bg-night-900">
-        <h3 className="font-semibold text-frost-100">{thread.teamName}</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-frost-100">{thread.teamName}</h3>
+          {/* GPS Hint Button */}
+          <Button
+            variant={thread.gpsHintEnabled ? "sand" : "outline"}
+            size="sm"
+            onClick={handleToggleGps}
+            disabled={isTogglingGps || !hasGpsCoordinates}
+            title={
+              !hasGpsCoordinates
+                ? "Nessuna coordinata GPS per questa tappa"
+                : thread.gpsHintEnabled
+                ? "GPS Hint attivo - Clicca per disabilitare"
+                : "Abilita GPS Hint"
+            }
+          >
+            {isTogglingGps ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Navigation
+                className={`h-4 w-4 ${thread.gpsHintEnabled ? "" : "opacity-50"}`}
+              />
+            )}
+            <span className="ml-2 hidden sm:inline">
+              {thread.gpsHintEnabled ? "GPS On" : "GPS"}
+            </span>
+          </Button>
+        </div>
         {thread.messages[0]?.gameContext && (
           <div className="flex items-center gap-4 mt-1 text-sm text-frost-400">
             <span className="flex items-center gap-1">

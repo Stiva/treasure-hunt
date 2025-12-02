@@ -26,6 +26,8 @@ export const createLocationSchema = z.object({
   hint2En: z.string().max(500, "L'indizio è troppo lungo").optional().nullable(),
   hint3It: z.string().max(500, "L'indizio è troppo lungo").optional().nullable(),
   hint3En: z.string().max(500, "L'indizio è troppo lungo").optional().nullable(),
+  latitude: z.string().max(20, "Coordinata troppo lunga").optional().nullable(),
+  longitude: z.string().max(20, "Coordinata troppo lunga").optional().nullable(),
   isStart: z.boolean().default(false),
   isEnd: z.boolean().default(false),
   orderIndex: z.number().int().min(0).default(0),

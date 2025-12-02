@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "secondary" | "outline" | "ghost" | "destructive" | "sand";
+  variant?: "default" | "secondary" | "outline" | "ghost" | "destructive" | "accent" | "sand";
   size?: "default" | "sm" | "lg" | "icon";
   isLoading?: boolean;
 }
@@ -25,21 +25,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-frost-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+      "inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50";
 
     const variants = {
       default:
-        "bg-frost-600 text-white hover:bg-frost-500 btn-frost",
+        "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md btn-primary",
       secondary:
-        "bg-night-800 text-frost-100 hover:bg-night-700 border border-night-700",
+        "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm",
       outline:
-        "border border-frost-500 text-frost-400 hover:bg-frost-600/10 hover:text-frost-300",
+        "border border-border bg-background text-foreground hover:bg-muted hover:text-foreground",
       ghost:
-        "text-frost-400 hover:bg-frost-600/10 hover:text-frost-300",
+        "text-foreground hover:bg-muted",
       destructive:
-        "bg-red-600 text-white hover:bg-red-500",
+        "bg-error text-white hover:bg-error/90 shadow-sm",
+      accent:
+        "bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm hover:shadow-md btn-accent font-semibold",
       sand:
-        "bg-sand-500 text-pitch-900 hover:bg-sand-400 btn-sand font-semibold",
+        "bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm hover:shadow-md btn-accent font-semibold", // Legacy alias for accent
     };
 
     const sizes = {

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
+  Button,
 } from "@/components/ui";
 import {
   MapPin,
@@ -14,6 +15,8 @@ import {
   Users,
   CheckCircle,
   Circle,
+  Navigation,
+  Loader2,
 } from "lucide-react";
 import type { Location, Player } from "@/lib/db/schema";
 import type { TeamWithPlayers } from "@/lib/db/queries/teams";
@@ -38,6 +41,39 @@ export function MonitorDashboard({
 }: MonitorDashboardProps) {
   const [teams, setTeams] = useState(initialTeams);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [togglingGps, setTogglingGps] = useState<number | null>(null);
+
+  const handleToggleGpsHint = async (teamId: number, currentEnabled: boolean) => {
+    setTogglingGps(teamId);
+    try {
+      const response = await fetch(
+        `/api/admin/sessions/${sessionId}/teams/${teamId}/gps-hint`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled: !currentEnabled }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setTeams((prev) =>
+          prev.map((t) =>
+            t.id === teamId ? { ...t, gpsHintEnabled: !currentEnabled } : t
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error toggling GPS hint:", err);
+    } finally {
+      setTogglingGps(null);
+    }
+  };
+
+  const hasGpsCoordinates = (team: TeamWithProgress) => {
+    if (!team.path || team.path.length === 0) return false;
+    const currentLocation = team.path[team.currentStage]?.location;
+    return currentLocation?.latitude && currentLocation?.longitude;
+  };
 
   // Auto-refresh every 5 seconds
   useEffect(() => {
@@ -222,7 +258,7 @@ export function MonitorDashboard({
                     </div>
 
                     {/* Stats */}
-                    <div className="flex gap-4 text-sm">
+                    <div className="flex gap-4 text-sm items-center">
                       <div className="text-center">
                         <p className="text-frost-500">Tappa</p>
                         <p className="font-medium text-frost-200">
@@ -241,6 +277,34 @@ export function MonitorDashboard({
                           {getElapsedTime(team.startedAt, team.finishedAt)}
                         </p>
                       </div>
+                      {/* GPS Hint Button */}
+                      {team.startedAt && !team.finishedAt && (
+                        <Button
+                          variant={team.gpsHintEnabled ? "sand" : "outline"}
+                          size="sm"
+                          onClick={() =>
+                            handleToggleGpsHint(team.id, team.gpsHintEnabled)
+                          }
+                          disabled={togglingGps === team.id || !hasGpsCoordinates(team)}
+                          title={
+                            !hasGpsCoordinates(team)
+                              ? "Nessuna coordinata GPS per questa tappa"
+                              : team.gpsHintEnabled
+                              ? "GPS Hint attivo - Clicca per disabilitare"
+                              : "Abilita GPS Hint"
+                          }
+                        >
+                          {togglingGps === team.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Navigation
+                              className={`h-4 w-4 ${
+                                team.gpsHintEnabled ? "" : "opacity-50"
+                              }`}
+                            />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>

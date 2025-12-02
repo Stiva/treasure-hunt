@@ -15,6 +15,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/leaflet/marker-shadow.png",
 });
 
+// Custom red icon for destination marker
+const destinationIcon = new L.Icon({
+  iconUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ef4444' stroke='%23991b1b' stroke-width='1'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E",
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -36],
+});
+
 // Componente per centrare la mappa sulla posizione
 function RecenterControl({ position }: { position: [number, number] }) {
   const map = useMap();
@@ -63,11 +71,21 @@ interface MapModalProps {
   isOpen: boolean;
   onClose: () => void;
   locale: string;
+  destinationCoords?: {
+    latitude: string;
+    longitude: string;
+  } | null;
 }
 
-export function MapModal({ isOpen, onClose, locale }: MapModalProps) {
+export function MapModal({ isOpen, onClose, locale, destinationCoords }: MapModalProps) {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Parse destination coordinates
+  const destinationPosition: [number, number] | null =
+    destinationCoords?.latitude && destinationCoords?.longitude
+      ? [parseFloat(destinationCoords.latitude), parseFloat(destinationCoords.longitude)]
+      : null;
   const [isLoading, setIsLoading] = useState(true);
   const [accuracy, setAccuracy] = useState<number | null>(null);
 
@@ -143,12 +161,12 @@ export function MapModal({ isOpen, onClose, locale }: MapModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-night-900 rounded-xl w-full max-w-lg overflow-hidden border border-frost-700/30 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-card rounded-2xl w-full max-w-lg overflow-hidden border border-border shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-frost-700/30">
-          <h2 className="text-lg font-semibold text-frost-100 flex items-center gap-2">
-            <Navigation className="h-5 w-5 text-frost-400" />
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Navigation className="h-5 w-5 text-muted-foreground" />
             {locale === "it" ? "La tua posizione" : "Your position"}
           </h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
@@ -159,9 +177,9 @@ export function MapModal({ isOpen, onClose, locale }: MapModalProps) {
         {/* Map Container */}
         <div className="h-80 relative">
           {isLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-night-800 z-10">
-              <Loader2 className="h-10 w-10 animate-spin text-frost-400 mb-3" />
-              <p className="text-frost-400 text-sm">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted z-10">
+              <Loader2 className="h-10 w-10 animate-spin text-muted-foreground mb-3" />
+              <p className="text-muted-foreground text-sm">
                 {locale === "it"
                   ? "Ricerca posizione..."
                   : "Getting position..."}
@@ -169,9 +187,9 @@ export function MapModal({ isOpen, onClose, locale }: MapModalProps) {
             </div>
           )}
           {error && !position && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-night-800 p-6 text-center z-10">
-              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 mb-4">
-                <p className="text-red-400">{error}</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted p-6 text-center z-10">
+              <div className="p-4 rounded-xl bg-error/10 border border-error/30 mb-4">
+                <p className="text-error">{error}</p>
               </div>
               <Button variant="outline" size="sm" onClick={onClose}>
                 {locale === "it" ? "Chiudi" : "Close"}
@@ -180,8 +198,8 @@ export function MapModal({ isOpen, onClose, locale }: MapModalProps) {
           )}
           {position && (
             <MapContainer
-              center={position}
-              zoom={17}
+              center={destinationPosition || position}
+              zoom={destinationPosition ? 15 : 17}
               className="h-full w-full"
               zoomControl={true}
             >
@@ -191,13 +209,33 @@ export function MapModal({ isOpen, onClose, locale }: MapModalProps) {
               />
               <LocationMarker position={position} locale={locale} />
               <RecenterControl position={position} />
+              {/* Destination marker */}
+              {destinationPosition && (
+                <Marker position={destinationPosition} icon={destinationIcon}>
+                  <Popup>
+                    {locale === "it"
+                      ? "Destinazione - Prossima tappa"
+                      : "Destination - Next stage"}
+                  </Popup>
+                </Marker>
+              )}
             </MapContainer>
           )}
         </div>
 
         {/* Footer con info */}
-        <div className="p-3 border-t border-frost-700/30 bg-night-800/50">
-          <div className="flex items-center justify-between text-xs text-frost-500">
+        <div className="p-3 border-t border-border bg-muted/50">
+          {destinationPosition && (
+            <div className="flex items-center gap-2 mb-2 text-xs text-accent">
+              <div className="w-3 h-3 bg-error rounded-full" />
+              <span>
+                {locale === "it"
+                  ? "Marker rosso = Destinazione (prossima tappa)"
+                  : "Red marker = Destination (next stage)"}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>
               {locale === "it"
                 ? "Posizione aggiornata in tempo reale"

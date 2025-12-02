@@ -19,17 +19,14 @@ import {
   Lightbulb,
   Trophy,
   Clock,
-  LogOut,
-  RefreshCw,
 } from "lucide-react";
-import { ChatButton } from "./chat-button";
-import { MapButton } from "./map-button";
+import { PlayerMenu } from "./player-menu";
 import type { Player, Team, Location } from "@/lib/db/schema";
 
 interface GameState {
-  team: Team;
+  team: Team & { gpsHintEnabled?: boolean };
   currentLocation: Location | null;
-  nextLocation: Partial<Location> | null;
+  nextLocation: Location | null;
   totalStages: number;
   isCompleted: boolean;
 }
@@ -212,25 +209,32 @@ export function GameDashboard({
   ];
   const visibleHints = hints.slice(0, team.hintsUsedCurrentStage);
 
+  // GPS destination coordinates (only available if admin enabled GPS hint)
+  const destinationCoords =
+    gameState.team.gpsHintEnabled && nextLoc?.latitude && nextLoc?.longitude
+      ? { latitude: nextLoc.latitude, longitude: nextLoc.longitude }
+      : null;
+
   // Game completed
   if (gameState.isCompleted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-night-950 to-pitch-950 p-4">
-        <Card variant="frost" className="max-w-md w-full text-center">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card variant="elevated" className="max-w-md w-full text-center">
           <CardContent className="py-8">
-            <Trophy className="h-16 w-16 mx-auto text-sand-400 mb-4" />
-            <h1 className="text-2xl font-bold text-frost-100 mb-2">
+            <Trophy className="h-16 w-16 mx-auto text-accent mb-4" />
+            <h1 className="text-2xl font-bold text-foreground mb-2">
               {t("congratulations")}
             </h1>
-            <p className="text-frost-400 mb-6">{t("gameCompleted")}</p>
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t("logout") || "Esci"}
-            </Button>
+            <p className="text-muted-foreground mb-6">{t("gameCompleted")}</p>
           </CardContent>
         </Card>
-        <MapButton locale={locale} />
-        <ChatButton locale={locale} />
+        <PlayerMenu
+          locale={locale}
+          destinationCoords={destinationCoords}
+          onRefresh={refreshGameState}
+          onLogout={handleLogout}
+          isLoading={isLoading !== null}
+        />
       </div>
     );
   }
@@ -238,21 +242,21 @@ export function GameDashboard({
   // Game not started
   if (!team.startedAt) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-night-950 to-pitch-950 p-4">
-        <Card variant="frost" className="max-w-md w-full text-center">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card variant="elevated" className="max-w-md w-full text-center">
           <CardContent className="py-8">
-            <Play className="h-16 w-16 mx-auto text-frost-400 mb-4" />
-            <h1 className="text-2xl font-bold text-frost-100 mb-2">
+            <Play className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+            <h1 className="text-2xl font-bold text-foreground mb-2">
               Pronto per iniziare?
             </h1>
-            <p className="text-frost-400 mb-2">
-              Ciao <strong>{player.firstName}</strong>!
+            <p className="text-muted-foreground mb-2">
+              Ciao <strong className="text-foreground">{player.firstName}</strong>!
             </p>
-            <p className="text-frost-400 mb-6">
-              Squadra: <strong>{team.name}</strong>
+            <p className="text-muted-foreground mb-6">
+              Squadra: <strong className="text-foreground">{team.name}</strong>
             </p>
             <Button
-              variant="sand"
+              variant="accent"
               size="lg"
               onClick={handleStartGame}
               disabled={isLoading !== null}
@@ -266,69 +270,56 @@ export function GameDashboard({
             </Button>
           </CardContent>
         </Card>
-        <MapButton locale={locale} />
-        <ChatButton locale={locale} />
+        <PlayerMenu
+          locale={locale}
+          destinationCoords={destinationCoords}
+          onRefresh={refreshGameState}
+          onLogout={handleLogout}
+          isLoading={isLoading !== null}
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-night-950 to-pitch-950 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-lg mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-frost-100">{team.name}</h1>
-            <p className="text-sm text-frost-400">
+            <h1 className="text-lg font-bold text-foreground">{team.name}</h1>
+            <p className="text-sm text-muted-foreground">
               {t("stageOf", {
                 current: team.currentStage + 1,
                 total: pathLength,
               })}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={refreshGameState}
-              disabled={isLoading !== null}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              disabled={isLoading !== null}
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
 
         {/* Messages */}
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+          <div className="p-3 rounded-xl bg-error/10 border border-error/30 text-error text-sm">
             {error}
           </div>
         )}
         {success && (
-          <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm">
+          <div className="p-3 rounded-xl bg-success/10 border border-success/30 text-success text-sm">
             {success}
           </div>
         )}
 
         {/* Current Location */}
         {gameState.currentLocation && (
-          <Card variant="frost">
+          <Card variant="elevated">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base">
-                <MapPin className="h-4 w-4 text-green-400" />
+                <MapPin className="h-4 w-4 text-success" />
                 {t("currentStage")}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-frost-200">
+              <p className="text-foreground">
                 {locale === "it"
                   ? gameState.currentLocation.nameIt
                   : gameState.currentLocation.nameEn}
@@ -339,15 +330,15 @@ export function GameDashboard({
 
         {/* Riddle */}
         {nextLoc && (
-          <Card variant="frost">
+          <Card variant="elevated">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Key className="h-4 w-4 text-sand-400" />
+                <Key className="h-4 w-4 text-accent" />
                 {t("riddle")}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-frost-200 whitespace-pre-wrap">
+              <p className="text-foreground whitespace-pre-wrap">
                 {locale === "it" ? nextLoc.riddleIt : nextLoc.riddleEn}
               </p>
             </CardContent>
@@ -355,7 +346,7 @@ export function GameDashboard({
         )}
 
         {/* Code Input */}
-        <Card variant="frost">
+        <Card variant="elevated">
           <CardContent className="pt-4">
             <form onSubmit={handleSubmitCode} className="flex gap-2">
               <Input
@@ -367,7 +358,7 @@ export function GameDashboard({
               />
               <Button
                 type="submit"
-                variant="sand"
+                variant="accent"
                 disabled={!code.trim() || isLoading !== null}
               >
                 {isLoading === "submit" ? (
@@ -381,14 +372,14 @@ export function GameDashboard({
         </Card>
 
         {/* Hints */}
-        <Card variant="frost">
+        <Card variant="elevated">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Lightbulb className="h-4 w-4 text-frost-400" />
+                <Lightbulb className="h-4 w-4 text-muted-foreground" />
                 {t("hint")}
               </CardTitle>
-              <span className="text-sm text-frost-500">
+              <span className="text-sm text-muted-foreground">
                 {t("hintsRemaining", { count: 3 - team.hintsUsedCurrentStage })}
               </span>
             </div>
@@ -400,12 +391,12 @@ export function GameDashboard({
                 {visibleHints.map((hint, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg bg-night-800 border border-night-700"
+                    className="p-3 rounded-xl bg-muted border border-border"
                   >
-                    <p className="text-xs text-frost-500 mb-1">
+                    <p className="text-xs text-muted-foreground mb-1">
                       {t("hintNumber", { number: idx + 1 })}
                     </p>
-                    <p className="text-frost-300 text-sm">
+                    <p className="text-foreground text-sm">
                       {locale === "it" ? hint.it : hint.en}
                     </p>
                   </div>
@@ -417,7 +408,7 @@ export function GameDashboard({
             {team.hintsUsedCurrentStage < 3 && (
               <>
                 {cooldownSeconds > 0 ? (
-                  <div className="flex items-center justify-center gap-2 text-frost-500 text-sm py-2">
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm py-2">
                     <Clock className="h-4 w-4" />
                     {t("hintCooldown", {
                       minutes: Math.floor(cooldownSeconds / 60),
@@ -443,15 +434,20 @@ export function GameDashboard({
             )}
 
             {team.hintsUsedCurrentStage >= 3 && (
-              <p className="text-center text-frost-500 text-sm">
+              <p className="text-center text-muted-foreground text-sm">
                 {t("noMoreHints")}
               </p>
             )}
           </CardContent>
         </Card>
       </div>
-      <MapButton locale={locale} />
-      <ChatButton locale={locale} />
+      <PlayerMenu
+        locale={locale}
+        destinationCoords={destinationCoords}
+        onRefresh={refreshGameState}
+        onLogout={handleLogout}
+        isLoading={isLoading !== null}
+      />
     </div>
   );
 }

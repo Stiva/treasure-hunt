@@ -5,6 +5,8 @@ import {
   teams,
   players,
   adminUsers,
+  teamPaths,
+  locations,
   type SupportMessage,
   type NewSupportMessage,
   type GameContext,
@@ -34,6 +36,12 @@ export interface TeamWithMessages {
   unreadCount: number;
   lastMessage: SupportMessage | null;
   messages: SupportMessageWithDetails[];
+  gpsHintEnabled: boolean;
+  currentStage: number;
+  nextLocationCoords: {
+    latitude: string | null;
+    longitude: string | null;
+  } | null;
 }
 
 // Get all messages for a team
@@ -99,14 +107,53 @@ export async function getMessagesBySession(
   const result: TeamWithMessages[] = [];
 
   for (const { teamId } of teamsWithMessages) {
-    // Get team info
+    // Get team info with gpsHintEnabled and currentStage
     const [team] = await db
-      .select({ id: teams.id, name: teams.name })
+      .select({
+        id: teams.id,
+        name: teams.name,
+        gpsHintEnabled: teams.gpsHintEnabled,
+        currentStage: teams.currentStage,
+      })
       .from(teams)
       .where(eq(teams.id, teamId))
       .limit(1);
 
     if (!team) continue;
+
+    // Get next location coords (current stage in the team's path)
+    let nextLocationCoords: { latitude: string | null; longitude: string | null } | null = null;
+
+    const [pathEntry] = await db
+      .select({
+        locationId: teamPaths.locationId,
+      })
+      .from(teamPaths)
+      .where(
+        and(
+          eq(teamPaths.teamId, teamId),
+          eq(teamPaths.stageOrder, team.currentStage)
+        )
+      )
+      .limit(1);
+
+    if (pathEntry) {
+      const [location] = await db
+        .select({
+          latitude: locations.latitude,
+          longitude: locations.longitude,
+        })
+        .from(locations)
+        .where(eq(locations.id, pathEntry.locationId))
+        .limit(1);
+
+      if (location && location.latitude && location.longitude) {
+        nextLocationCoords = {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        };
+      }
+    }
 
     // Get messages for this team
     const messages = await getMessagesByTeam(teamId);
@@ -125,6 +172,9 @@ export async function getMessagesBySession(
       unreadCount,
       lastMessage,
       messages,
+      gpsHintEnabled: team.gpsHintEnabled,
+      currentStage: team.currentStage,
+      nextLocationCoords,
     });
   }
 
