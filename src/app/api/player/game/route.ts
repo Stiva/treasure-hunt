@@ -12,6 +12,7 @@ import {
   advanceTeamToNextStage,
   recordHintRequest,
   startTeam,
+  getSessionById,
 } from "@/lib/db/queries";
 
 // GET /api/player/game - Get current game state
@@ -34,6 +35,9 @@ export async function GET() {
     }
 
     const path = await getTeamPath(team.id);
+
+    // Get session for victory message
+    const session = await getSessionById(player.sessionId);
 
     // Get localized content
     // Include GPS coordinates only if gpsHintEnabled is true
@@ -80,6 +84,8 @@ export async function GET() {
       isCompleted: gameState.isCompleted,
       pathLength: path.length,
       hasStarted: gameState.team.startedAt !== null,
+      victoryMessageIt: session?.victoryMessageIt || null,
+      victoryMessageEn: session?.victoryMessageEn || null,
     });
   } catch (error) {
     console.error("Error getting game state:", error);

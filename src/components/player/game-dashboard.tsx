@@ -37,6 +37,8 @@ interface GameDashboardProps {
   gameState: GameState;
   pathLength: number;
   locale: string;
+  victoryMessageIt: string | null;
+  victoryMessageEn: string | null;
 }
 
 export function GameDashboard({
@@ -45,6 +47,8 @@ export function GameDashboard({
   gameState: initialGameState,
   pathLength,
   locale,
+  victoryMessageIt: initialVictoryMessageIt,
+  victoryMessageEn: initialVictoryMessageEn,
 }: GameDashboardProps) {
   const t = useTranslations("game");
   const router = useRouter();
@@ -55,6 +59,8 @@ export function GameDashboard({
   const [gameState, setGameState] = useState(initialGameState);
   const [team, setTeam] = useState(initialTeam);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [victoryMessageIt, setVictoryMessageIt] = useState(initialVictoryMessageIt);
+  const [victoryMessageEn, setVictoryMessageEn] = useState(initialVictoryMessageEn);
 
   // Polling for real-time sync (for couples mode)
   const refreshGameState = useCallback(async () => {
@@ -70,6 +76,13 @@ export function GameDashboard({
           isCompleted: data.data.isCompleted,
         });
         setTeam(data.data.team);
+        // Update victory messages if available
+        if (data.data.victoryMessageIt !== undefined) {
+          setVictoryMessageIt(data.data.victoryMessageIt);
+        }
+        if (data.data.victoryMessageEn !== undefined) {
+          setVictoryMessageEn(data.data.victoryMessageEn);
+        }
       }
     } catch (err) {
       console.error("Error refreshing game state:", err);
@@ -217,6 +230,9 @@ export function GameDashboard({
 
   // Game completed
   if (gameState.isCompleted) {
+    // Get custom victory message based on locale, fallback to default translation
+    const customVictoryMessage = locale === "it" ? victoryMessageIt : victoryMessageEn;
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card variant="elevated" className="max-w-md w-full text-center">
@@ -225,7 +241,11 @@ export function GameDashboard({
             <h1 className="text-2xl font-bold text-foreground mb-2">
               {t("congratulations")}
             </h1>
-            <p className="text-muted-foreground mb-6">{t("gameCompleted")}</p>
+            {customVictoryMessage ? (
+              <p className="text-foreground whitespace-pre-wrap mb-6">{customVictoryMessage}</p>
+            ) : (
+              <p className="text-muted-foreground mb-6">{t("gameCompleted")}</p>
+            )}
           </CardContent>
         </Card>
         <PlayerMenu

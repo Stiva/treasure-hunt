@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentPlayer } from "@/lib/utils/player-session";
-import { getTeamGameState, getTeamPath } from "@/lib/db/queries";
+import { getTeamGameState, getTeamPath, getSessionById } from "@/lib/db/queries";
 import { GameDashboard } from "@/components/player/game-dashboard";
 
 interface PlayPageProps {
@@ -38,9 +38,12 @@ export default async function PlayPage({ params }: PlayPageProps) {
     );
   }
 
-  // Get game state
-  const gameState = await getTeamGameState(team.id);
-  const path = await getTeamPath(team.id);
+  // Get game state and session for victory message
+  const [gameState, path, session] = await Promise.all([
+    getTeamGameState(team.id),
+    getTeamPath(team.id),
+    getSessionById(player.sessionId),
+  ]);
 
   // Check if paths are generated
   if (!path || path.length === 0) {
@@ -67,6 +70,8 @@ export default async function PlayPage({ params }: PlayPageProps) {
       gameState={gameState!}
       pathLength={path.length}
       locale={locale}
+      victoryMessageIt={session?.victoryMessageIt || null}
+      victoryMessageEn={session?.victoryMessageEn || null}
     />
   );
 }

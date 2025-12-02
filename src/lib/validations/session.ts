@@ -16,6 +16,8 @@ export const createSessionSchema = z.object({
       "La parola chiave può contenere solo lettere, numeri, trattini e underscore"
     ),
   gameMode: gameModeSchema.default("couples"),
+  victoryMessageIt: z.string().max(2000, "Il messaggio è troppo lungo").optional(),
+  victoryMessageEn: z.string().max(2000, "The message is too long").optional(),
 });
 
 export const updateSessionSchema = z.object({
@@ -34,6 +36,8 @@ export const updateSessionSchema = z.object({
     )
     .optional(),
   gameMode: gameModeSchema.optional(),
+  victoryMessageIt: z.string().max(2000, "Il messaggio è troppo lungo").optional(),
+  victoryMessageEn: z.string().max(2000, "The message is too long").optional(),
 });
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;

@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return errorResponse(validation.error.issues[0].message);
     }
 
-    const { name, keyword, gameMode } = validation.data;
+    const { name, keyword, gameMode, victoryMessageIt, victoryMessageEn } = validation.data;
 
     // Check if session exists
     const existingSession = await getSessionById(sessionId);
@@ -88,6 +88,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       name,
       keyword,
       gameMode,
+      victoryMessageIt,
+      victoryMessageEn,
     });
 
     return successResponse(updatedSession, "Sessione aggiornata con successo");

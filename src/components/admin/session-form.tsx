@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Button, Input, Label, Select, Card, CardContent } from "@/components/ui";
+import { Button, Input, Label, Select, Card, CardContent, Textarea } from "@/components/ui";
 import { Loader2 } from "lucide-react";
 import type { Session } from "@/lib/db/schema";
 
@@ -24,6 +24,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
     name: session?.name || "",
     keyword: session?.keyword || "",
     gameMode: session?.gameMode || "couples",
+    victoryMessageIt: session?.victoryMessageIt || "",
+    victoryMessageEn: session?.victoryMessageEn || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,6 +136,46 @@ export function SessionForm({ session, locale }: SessionFormProps) {
               {formData.gameMode === "couples"
                 ? "I giocatori saranno organizzati in coppie che condividono lo stesso percorso."
                 : "Ogni giocatore partecipa singolarmente con il proprio percorso."}
+            </p>
+          </div>
+
+          {/* Victory Message IT */}
+          <div className="space-y-2">
+            <Label htmlFor="victoryMessageIt">
+              Messaggio di Vittoria (Italiano)
+            </Label>
+            <Textarea
+              id="victoryMessageIt"
+              value={formData.victoryMessageIt}
+              onChange={(e) =>
+                setFormData({ ...formData, victoryMessageIt: e.target.value })
+              }
+              placeholder="Es: Complimenti! Avete completato la caccia al tesoro delle Cinque Leggende!"
+              rows={3}
+            />
+            <p className="text-xs text-frost-500">
+              Messaggio mostrato ai giocatori quando completano la caccia al tesoro.
+              Lascia vuoto per usare il messaggio di default.
+            </p>
+          </div>
+
+          {/* Victory Message EN */}
+          <div className="space-y-2">
+            <Label htmlFor="victoryMessageEn">
+              Victory Message (English)
+            </Label>
+            <Textarea
+              id="victoryMessageEn"
+              value={formData.victoryMessageEn}
+              onChange={(e) =>
+                setFormData({ ...formData, victoryMessageEn: e.target.value })
+              }
+              placeholder="E.g.: Congratulations! You have completed the Rise of the Guardians treasure hunt!"
+              rows={3}
+            />
+            <p className="text-xs text-frost-500">
+              Message shown to players when they complete the treasure hunt.
+              Leave empty to use the default message.
             </p>
           </div>
 

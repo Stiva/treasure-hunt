@@ -28,6 +28,8 @@ export const sessions = pgTable(
     keyword: varchar("keyword", { length: 100 }).notNull(),
     gameMode: gameModeEnum("game_mode").notNull().default("couples"),
     isActive: boolean("is_active").notNull().default(false),
+    victoryMessageIt: text("victory_message_it"),
+    victoryMessageEn: text("victory_message_en"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
