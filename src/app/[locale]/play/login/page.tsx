@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { getCurrentPlayer } from "@/lib/utils/player-session";
 import { PlayerLoginForm } from "@/components/player/login-form";
 
@@ -20,12 +21,16 @@ export default async function PlayLoginPage({ params }: PlayLoginPageProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-night-950 to-pitch-950 p-4">
       <div className="w-full max-w-md space-y-6">
-        {/* Logo/Title */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gradient-frost mb-2">
-            Caccia al Tesoro
-          </h1>
-          <p className="text-frost-400">{t("loginTitle")}</p>
+        {/* Banner Image */}
+        <div className="flex justify-center">
+          <Image
+            src="/TitleBanner_medium.png"
+            alt="Le Cinque Leggende: I Tesori Nascosti di Carpi"
+            width={600}
+            height={200}
+            className="w-full max-w-lg h-auto rounded-lg"
+            priority
+          />
         </div>
 
         {/* Login Form */}

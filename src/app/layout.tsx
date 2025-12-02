@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Caccia al Tesoro - Treasure Hunt",
+  title: "Le Cinque Leggende: I Tesori Nascosti di Carpi",
   description: "Un'avventura magica ti attende - A magical adventure awaits",
   icons: {
     icon: [

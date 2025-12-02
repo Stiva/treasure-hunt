@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Snowflake, Sparkles, HelpCircle, Shield } from "lucide-react";
 
@@ -33,20 +34,24 @@ export default function HomePage() {
       </div>
 
       {/* Main content */}
-      <div className="text-center z-10 max-w-md mx-auto">
-        {/* Logo/Title */}
+      <div className="text-center z-10 max-w-lg mx-auto">
+        {/* Banner Image */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gradient-frost mb-4">
-            {t("landing.title")}
-          </h1>
-          <p className="text-frost-300 text-lg">{t("landing.subtitle")}</p>
+          <Image
+            src="/TitleBanner_medium.png"
+            alt="Le Cinque Leggende: I Tesori Nascosti di Carpi"
+            width={600}
+            height={200}
+            className="w-full h-auto rounded-lg"
+            priority
+          />
         </div>
 
         {/* Decorative divider */}
         <div className="flex items-center justify-center gap-4 my-8">
-          <div className="h-px w-16 bg-gradient-to-r from-transparent to-frost-500" />
-          <Snowflake className="text-frost-400 animate-spin-slow" size={20} />
-          <div className="h-px w-16 bg-gradient-to-l from-transparent to-frost-500" />
+          <div className="h-px w-16 bg-gradient-to-r from-transparent to-primary" />
+          <Snowflake className="text-primary animate-spin-slow" size={20} />
+          <div className="h-px w-16 bg-gradient-to-l from-transparent to-primary" />
         </div>
 
         {/* Action buttons */}

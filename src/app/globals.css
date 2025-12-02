@@ -1,47 +1,47 @@
 @import "tailwindcss";
 
 /* ===========================================
-   ULTRA LIGHT & AIRY THEME - Apple-inspired
+   RISE OF THE GUARDIANS - Ice Blue & Gold Theme
    =========================================== */
 
 :root {
-  /* ========== Light Mode (Default) - Ultra Soft ========== */
+  /* ========== Light Mode - Rise of the Guardians Ice/Gold Theme ========== */
 
-  /* Base colors - Very light and airy */
-  --background: #f5f5f7;           /* Warm gray, almost white */
-  --foreground: #1d1d1f;           /* Dark gray (not pure black) */
+  /* Base colors - Snow and ice inspired */
+  --background: #E8F4FC;           /* Light snow blue */
+  --foreground: #1a3a5c;           /* Dark blue-gray */
   --card: #ffffff;                 /* Pure white cards */
-  --card-foreground: #1d1d1f;
-  --muted: #f5f5f7;                /* Same as background */
-  --muted-foreground: #86868b;     /* Medium gray for secondary text */
-  --border: #e8e8ed;               /* Almost invisible borders */
+  --card-foreground: #1a3a5c;
+  --muted: #d4e8f5;                /* Soft blue-gray */
+  --muted-foreground: #5a7a9a;     /* Medium blue-gray */
+  --border: #c4d8e8;               /* Light blue border */
   --input: #ffffff;
-  --ring: #ff6b6b;
+  --ring: #5B8FC2;
 
-  /* Primary - Soft coral/peach red */
-  --primary: #ff6b6b;              /* Soft coral red */
+  /* Primary - Ice blue (from banner subtitle) */
+  --primary: #5B8FC2;              /* Ice blue */
   --primary-foreground: #ffffff;
 
-  /* Secondary - Soft mint green */
-  --secondary: #51cf66;            /* Mint green */
+  /* Secondary - Rich red (North's coat) */
+  --secondary: #8B3A3A;            /* Rich red */
   --secondary-foreground: #ffffff;
 
-  /* Accent - Soft amber/gold */
-  --accent: #fcc419;               /* Amber gold */
-  --accent-foreground: #1d1d1f;
+  /* Accent - Gold (from banner title) */
+  --accent: #D4A84B;               /* Gold */
+  --accent-foreground: #1a3a5c;
 
   /* Status colors */
   --success: #20c997;              /* Teal */
-  --error: #ff6b6b;
+  --error: #c45c5c;                /* Softer red */
 
-  /* Pastel icon colors */
-  --icon-coral: #ff8787;           /* Coral for stats */
+  /* Pastel icon colors - updated to match theme */
+  --icon-coral: #c47070;           /* Muted red */
   --icon-mint: #69db7c;            /* Mint green */
   --icon-sky: #74c0fc;             /* Sky blue */
   --icon-lavender: #b197fc;        /* Lavender */
-  --icon-peach: #ffa94d;           /* Peach/orange */
+  --icon-peach: #D4A84B;           /* Gold */
 
-  /* Legacy compatibility - mapped to new colors */
+  /* Legacy compatibility - mapped to new ice/gold theme */
   --frost-100: var(--foreground);
   --frost-200: var(--foreground);
   --frost-300: var(--muted-foreground);
@@ -60,39 +60,39 @@
 }
 
 .dark {
-  /* ========== Dark Mode - Elegant contrast ========== */
+  /* ========== Dark Mode - Rise of the Guardians Night Theme ========== */
 
-  /* Base colors - iOS-style dark */
-  --background: #0a0a0a;           /* Elegant black */
-  --foreground: #f5f5f7;           /* White */
-  --card: #1c1c1e;                 /* iOS-style dark gray */
-  --card-foreground: #f5f5f7;
-  --muted: #2c2c2e;                /* Medium gray */
-  --muted-foreground: #98989d;
-  --border: #38383a;               /* Subtle borders */
-  --input: #1c1c1e;
-  --ring: #ff8787;
+  /* Base colors - Dark blue inspired */
+  --background: #1a2a3a;           /* Dark blue */
+  --foreground: #E8F4FC;           /* Snow white */
+  --card: #243a4d;                 /* Slightly lighter blue */
+  --card-foreground: #E8F4FC;
+  --muted: #2a4a5d;                /* Medium dark blue */
+  --muted-foreground: #8ab4d4;     /* Light blue-gray */
+  --border: #3a5a6d;               /* Blue border */
+  --input: #243a4d;
+  --ring: #8BBDE8;
 
   /* Accent colors - Brighter for dark mode */
-  --primary: #ff8787;              /* Brighter coral */
-  --primary-foreground: #ffffff;
-  --secondary: #69db7c;            /* Brighter mint */
+  --primary: #8BBDE8;              /* Lighter ice blue */
+  --primary-foreground: #1a2a3a;
+  --secondary: #c45c5c;            /* Lighter red */
   --secondary-foreground: #ffffff;
-  --accent: #ffd43b;               /* Brighter gold */
-  --accent-foreground: #1d1d1f;
+  --accent: #F5D280;               /* Lighter gold */
+  --accent-foreground: #1a2a3a;
 
   /* Status colors */
   --success: #20c997;
-  --error: #ff6b6b;
+  --error: #c45c5c;
 
-  /* Pastel icon colors - slightly brighter for dark mode */
-  --icon-coral: #ffa8a8;
+  /* Pastel icon colors - brighter for dark mode */
+  --icon-coral: #d08080;
   --icon-mint: #8ce99a;
   --icon-sky: #a5d8ff;
   --icon-lavender: #d0bfff;
-  --icon-peach: #ffc078;
+  --icon-peach: #F5D280;
 
-  /* Legacy compatibility - mapped to new colors */
+  /* Legacy compatibility - mapped to new ice/gold theme */
   --frost-100: var(--foreground);
   --frost-200: var(--foreground);
   --frost-300: var(--muted-foreground);
@@ -205,20 +205,20 @@ body {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 0 15px rgba(91, 143, 194, 0.3);
   }
   50% {
-    box-shadow: 0 0 25px rgba(255, 107, 107, 0.5);
+    box-shadow: 0 0 25px rgba(91, 143, 194, 0.5);
   }
 }
 
 
 @keyframes goldGlow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
+    box-shadow: 0 0 15px rgba(212, 168, 75, 0.3);
   }
   50% {
-    box-shadow: 0 0 25px rgba(234, 179, 8, 0.5);
+    box-shadow: 0 0 25px rgba(212, 168, 75, 0.5);
   }
 }
 
@@ -305,29 +305,30 @@ body {
    =========================================== */
 
 .text-gradient-primary {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
+  background: linear-gradient(135deg, #5B8FC2 0%, #8BBDE8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-accent {
-  background: linear-gradient(135deg, #fcc419 0%, #ffe066 100%);
+  background: linear-gradient(135deg, #D4A84B 0%, #F5D280 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Legacy gradients - mapped to new ones */
+/* Ice blue gradient - for titles */
 .text-gradient-frost {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
+  background: linear-gradient(135deg, #5B8FC2 0%, #8BBDE8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+/* Gold gradient - for accents */
 .text-gradient-sand {
-  background: linear-gradient(135deg, #fcc419 0%, #ffe066 100%);
+  background: linear-gradient(135deg, #D4A84B 0%, #F5D280 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -338,24 +339,25 @@ body {
    =========================================== */
 
 .btn-primary:hover {
-  box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35);
+  box-shadow: 0 4px 14px rgba(91, 143, 194, 0.35);
 }
 
 .dark .btn-primary:hover {
-  box-shadow: 0 4px 14px rgba(255, 135, 135, 0.35);
+  box-shadow: 0 4px 14px rgba(139, 189, 232, 0.35);
 }
 
 .btn-accent:hover {
-  box-shadow: 0 4px 14px rgba(252, 196, 25, 0.35);
+  box-shadow: 0 4px 14px rgba(212, 168, 75, 0.35);
 }
 
-/* Legacy button classes */
+/* Ice blue button hover */
 .btn-frost:hover {
-  box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35);
+  box-shadow: 0 4px 14px rgba(91, 143, 194, 0.35);
 }
 
+/* Gold button hover */
 .btn-sand:hover {
-  box-shadow: 0 4px 14px rgba(252, 196, 25, 0.35);
+  box-shadow: 0 4px 14px rgba(212, 168, 75, 0.35);
 }
 
 /* ===========================================

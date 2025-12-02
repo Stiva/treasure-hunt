@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { UserButton } from "@clerk/nextjs";
 import { Clock, Snowflake, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { checkAdminAuth } from "@/lib/admin-auth";
@@ -52,11 +53,14 @@ export default async function PendingApprovalPage({ params }: PendingPageProps) 
       <header className="border-b border-night-800 bg-pitch-900/80 backdrop-blur-md">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2 text-frost-100">
-              <Snowflake className="h-6 w-6 text-frost-400" />
-              <span className="font-semibold text-lg">
-                Caccia al Tesoro
-              </span>
+            <div className="flex items-center gap-2">
+              <Image
+                src="/TitleBanner_small.png"
+                alt="Le Cinque Leggende"
+                width={200}
+                height={67}
+                className="h-10 w-auto"
+              />
             </div>
             <UserButton
               afterSignOutUrl="/"
