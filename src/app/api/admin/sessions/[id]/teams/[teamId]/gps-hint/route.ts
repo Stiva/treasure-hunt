@@ -40,7 +40,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return notFoundResponse("Squadra non trovata");
     }
 
-    const updatedTeam = await updateTeam(id, { gpsHintEnabled: enabled });
+    // When enabling GPS, also save the current stage so the hint is only valid for this stage
+    const updatedTeam = await updateTeam(id, {
+      gpsHintEnabled: enabled,
+      gpsHintStage: enabled ? existingTeam.currentStage : null,
+    });
 
     return successResponse(
       updatedTeam,

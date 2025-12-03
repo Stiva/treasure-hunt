@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getCurrentPlayer } from "@/lib/utils/player-session";
-import { getTeamGameState, getTeamPath, getSessionById } from "@/lib/db/queries";
+import { getTeamGameState, getTeamPath, getSessionById, getTeamWithPlayers } from "@/lib/db/queries";
 import { GameDashboard } from "@/components/player/game-dashboard";
+
+// Force dynamic rendering to prevent caching issues between sessions
+export const dynamic = "force-dynamic";
 
 interface PlayPageProps {
   params: Promise<{ locale: string }>;
@@ -38,12 +41,18 @@ export default async function PlayPage({ params }: PlayPageProps) {
     );
   }
 
-  // Get game state and session for victory message
-  const [gameState, path, session] = await Promise.all([
+  // Get game state, session for victory message, and team with players
+  const [gameState, path, session, teamWithPlayers] = await Promise.all([
     getTeamGameState(team.id),
     getTeamPath(team.id),
     getSessionById(player.sessionId),
+    getTeamWithPlayers(team.id),
   ]);
+
+  // Get teammates (excluding current player)
+  const teammates = teamWithPlayers?.players
+    .filter((p) => p.id !== player.id)
+    .map((p) => ({ firstName: p.firstName, lastName: p.lastName })) || [];
 
   // Check if paths are generated
   if (!path || path.length === 0) {
@@ -67,6 +76,7 @@ export default async function PlayPage({ params }: PlayPageProps) {
     <GameDashboard
       player={player}
       team={team}
+      teammates={teammates}
       gameState={gameState!}
       pathLength={path.length}
       locale={locale}

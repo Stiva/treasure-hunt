@@ -24,6 +24,7 @@ export function SessionForm({ session, locale }: SessionFormProps) {
     name: session?.name || "",
     keyword: session?.keyword || "",
     gameMode: session?.gameMode || "couples",
+    adminDisplayName: session?.adminDisplayName || "",
     victoryMessageIt: session?.victoryMessageIt || "",
     victoryMessageEn: session?.victoryMessageEn || "",
   });
@@ -136,6 +137,25 @@ export function SessionForm({ session, locale }: SessionFormProps) {
               {formData.gameMode === "couples"
                 ? "I giocatori saranno organizzati in coppie che condividono lo stesso percorso."
                 : "Ogni giocatore partecipa singolarmente con il proprio percorso."}
+            </p>
+          </div>
+
+          {/* Admin Display Name */}
+          <div className="space-y-2">
+            <Label htmlFor="adminDisplayName">
+              Nome Admin nella Chat
+            </Label>
+            <Input
+              id="adminDisplayName"
+              value={formData.adminDisplayName}
+              onChange={(e) =>
+                setFormData({ ...formData, adminDisplayName: e.target.value })
+              }
+              placeholder="Es: Sandyman, Jack Frost..."
+            />
+            <p className="text-xs text-frost-500">
+              Nome che verrà mostrato ai giocatori nella chat di supporto al posto di "Admin".
+              Lascia vuoto per usare "Admin".
             </p>
           </div>
 

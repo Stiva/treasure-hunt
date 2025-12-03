@@ -24,16 +24,22 @@ import { PlayerMenu } from "./player-menu";
 import type { Player, Team, Location } from "@/lib/db/schema";
 
 interface GameState {
-  team: Team & { gpsHintEnabled?: boolean };
+  team: Team & { gpsHintEnabled?: boolean; gpsHintStage?: number | null };
   currentLocation: Location | null;
   nextLocation: Location | null;
   totalStages: number;
   isCompleted: boolean;
 }
 
+interface Teammate {
+  firstName: string;
+  lastName: string;
+}
+
 interface GameDashboardProps {
   player: Player;
   team: Team;
+  teammates: Teammate[];
   gameState: GameState;
   pathLength: number;
   locale: string;
@@ -44,6 +50,7 @@ interface GameDashboardProps {
 export function GameDashboard({
   player,
   team: initialTeam,
+  teammates,
   gameState: initialGameState,
   pathLength,
   locale,
@@ -89,28 +96,39 @@ export function GameDashboard({
     }
   }, []);
 
-  // Poll every 3 seconds for real-time sync
+  // Poll every 5 seconds for real-time sync (optimized for scalability)
+  // Don't poll if game is completed
   useEffect(() => {
-    const interval = setInterval(refreshGameState, 3000);
+    if (gameState.isCompleted) return;
+
+    const interval = setInterval(refreshGameState, 5000);
     return () => clearInterval(interval);
-  }, [refreshGameState]);
+  }, [refreshGameState, gameState.isCompleted]);
 
-  // Cooldown timer
+  // Cooldown timer - recalculate from server timestamp each tick
   useEffect(() => {
-    if (team.lastHintRequestedAt) {
-      const cooldownMs = 3 * 60 * 1000;
-      const timeSinceLastHint =
-        Date.now() - new Date(team.lastHintRequestedAt).getTime();
-      const remainingMs = Math.max(0, cooldownMs - timeSinceLastHint);
-      setCooldownSeconds(Math.ceil(remainingMs / 1000));
-
-      if (remainingMs > 0) {
-        const timer = setInterval(() => {
-          setCooldownSeconds((prev) => Math.max(0, prev - 1));
-        }, 1000);
-        return () => clearInterval(timer);
-      }
+    if (!team.lastHintRequestedAt) {
+      setCooldownSeconds(0);
+      return;
     }
+
+    const lastHintTime = team.lastHintRequestedAt;
+
+    const calculateRemaining = () => {
+      const cooldownMs = 3 * 60 * 1000;
+      const elapsed = Date.now() - new Date(lastHintTime).getTime();
+      return Math.max(0, Math.ceil((cooldownMs - elapsed) / 1000));
+    };
+
+    setCooldownSeconds(calculateRemaining());
+
+    const timer = setInterval(() => {
+      const remaining = calculateRemaining();
+      setCooldownSeconds(remaining);
+      if (remaining <= 0) clearInterval(timer);
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [team.lastHintRequestedAt]);
 
   const handleStartGame = async () => {
@@ -222,9 +240,12 @@ export function GameDashboard({
   ];
   const visibleHints = hints.slice(0, team.hintsUsedCurrentStage);
 
-  // GPS destination coordinates (only available if admin enabled GPS hint)
+  // GPS destination coordinates (only available if admin enabled GPS hint for current stage)
+  const gpsActiveForCurrentStage =
+    gameState.team.gpsHintEnabled &&
+    gameState.team.gpsHintStage === team.currentStage;
   const destinationCoords =
-    gameState.team.gpsHintEnabled && nextLoc?.latitude && nextLoc?.longitude
+    gpsActiveForCurrentStage && nextLoc?.latitude && nextLoc?.longitude
       ? { latitude: nextLoc.latitude, longitude: nextLoc.longitude }
       : null;
 
@@ -272,9 +293,18 @@ export function GameDashboard({
             <p className="text-muted-foreground mb-2">
               Ciao <strong className="text-foreground">{player.firstName}</strong>!
             </p>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-2">
               Squadra: <strong className="text-foreground">{team.name}</strong>
             </p>
+            {teammates.length > 0 && (
+              <p className="text-muted-foreground mb-6">
+                Con:{" "}
+                <strong className="text-foreground">
+                  {teammates.map((t) => `${t.firstName} ${t.lastName}`).join(", ")}
+                </strong>
+              </p>
+            )}
+            {teammates.length === 0 && <div className="mb-6" />}
             <Button
               variant="accent"
               size="lg"

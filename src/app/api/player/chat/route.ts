@@ -8,6 +8,7 @@ import {
 } from "@/lib/db/queries/support-messages";
 import { getTeamPathLength } from "@/lib/db/queries/progress";
 import { getTeamCurrentLocation } from "@/lib/db/queries/progress";
+import { getSessionById } from "@/lib/db/queries";
 import type { GameContext } from "@/lib/db/schema";
 
 // GET - Get messages for the player's team
@@ -29,8 +30,11 @@ export async function GET() {
   }
 
   try {
-    const messages = await getMessagesByTeam(session.team.id);
-    const unreadCount = await getUnreadCountByTeam(session.team.id);
+    const [messages, unreadCount, gameSession] = await Promise.all([
+      getMessagesByTeam(session.team.id),
+      getUnreadCountByTeam(session.team.id),
+      getSessionById(session.player.sessionId),
+    ]);
 
     // Mark admin replies as read when player fetches messages
     if (unreadCount > 0) {
@@ -42,6 +46,7 @@ export async function GET() {
       data: {
         messages,
         unreadCount,
+        adminDisplayName: gameSession?.adminDisplayName || null,
       },
     });
   } catch (error) {

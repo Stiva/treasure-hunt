@@ -4,6 +4,9 @@ import Image from "next/image";
 import { getCurrentPlayer } from "@/lib/utils/player-session";
 import { PlayerLoginForm } from "@/components/player/login-form";
 
+// Force dynamic rendering to prevent caching issues between sessions
+export const dynamic = "force-dynamic";
+
 interface PlayLoginPageProps {
   params: Promise<{ locale: string }>;
 }

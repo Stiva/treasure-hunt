@@ -40,8 +40,9 @@ export async function GET() {
     const session = await getSessionById(player.sessionId);
 
     // Get localized content
-    // Include GPS coordinates only if gpsHintEnabled is true
-    const gpsHintEnabled = gameState.team.gpsHintEnabled;
+    // Include GPS coordinates only if gpsHintEnabled is true AND current stage matches gpsHintStage
+    const gpsHintEnabled = gameState.team.gpsHintEnabled &&
+      gameState.team.gpsHintStage === gameState.team.currentStage;
 
     return successResponse({
       team: {

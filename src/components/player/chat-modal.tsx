@@ -36,9 +36,12 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
     type: "image" | "video";
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [adminDisplayName, setAdminDisplayName] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const defaultAdminName = locale === "it" ? "Admin" : "Admin";
 
   const t = {
     title: locale === "it" ? "Supporto" : "Support",
@@ -55,7 +58,6 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
       ? "Errore nell'invio del messaggio"
       : "Error sending message",
     you: locale === "it" ? "Tu" : "You",
-    admin: locale === "it" ? "Admin" : "Admin",
   };
 
   const scrollToBottom = () => {
@@ -68,6 +70,9 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
       const data = await response.json();
       if (data.success) {
         setMessages(data.data.messages || []);
+        if (data.data.adminDisplayName) {
+          setAdminDisplayName(data.data.adminDisplayName);
+        }
       }
     } catch (err) {
       console.error("Error fetching messages:", err);
@@ -251,7 +256,7 @@ export function ChatModal({ isOpen, onClose, locale }: ChatModalProps) {
                     msg.isFromAdmin ? "text-muted-foreground" : "text-primary-foreground/80"
                   }`}>
                     {msg.isFromAdmin
-                      ? msg.adminUser?.name || t.admin
+                      ? msg.adminUser?.name || adminDisplayName || defaultAdminName
                       : t.you}
                   </div>
 
