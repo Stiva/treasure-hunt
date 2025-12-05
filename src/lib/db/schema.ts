@@ -14,7 +14,6 @@ import {
 import { relations } from "drizzle-orm";
 
 // Enums
-export const gameModeEnum = pgEnum("game_mode", ["solo", "couples"]);
 export const adminStatusEnum = pgEnum("admin_status", ["pending", "approved", "rejected"]);
 
 // ============================================
@@ -26,7 +25,7 @@ export const sessions = pgTable(
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     keyword: varchar("keyword", { length: 100 }).notNull(),
-    gameMode: gameModeEnum("game_mode").notNull().default("couples"),
+    teamSize: integer("team_size").notNull().default(2),
     isActive: boolean("is_active").notNull().default(false),
     adminDisplayName: varchar("admin_display_name", { length: 100 }),
     victoryMessageIt: text("victory_message_it"),

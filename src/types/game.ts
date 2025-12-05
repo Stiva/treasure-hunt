@@ -98,7 +98,7 @@ export interface TeamMonitorData {
 export interface SessionMonitorData {
   sessionId: number;
   sessionName: string;
-  gameMode: "solo" | "couples";
+  teamSize: number;
   totalTeams: number;
   teamsStarted: number;
   teamsCompleted: number;

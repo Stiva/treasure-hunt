@@ -62,9 +62,10 @@ export default async function TeamsPage({ params }: TeamsPageProps) {
         <div>
           <h1 className="text-2xl font-bold text-frost-100">{t("teams")}</h1>
           <p className="text-frost-400">
-            Gestisci le squadre della sessione "{session.name}"
-            {session.gameMode === "couples" && " (Modalità Coppie)"}
-            {session.gameMode === "solo" && " (Modalità Solitario)"}
+            Gestisci le squadre della sessione &quot;{session.name}&quot;
+            {session.teamSize === 1 && " (Modalità Solitario)"}
+            {session.teamSize === 2 && " (Modalità Coppie)"}
+            {session.teamSize > 2 && ` (Squadre da ${session.teamSize})`}
           </p>
         </div>
       </div>
@@ -121,19 +122,23 @@ export default async function TeamsPage({ params }: TeamsPageProps) {
       {/* Help Text */}
       <div className="p-4 rounded-lg bg-frost-600/10 border border-frost-600/20">
         <h4 className="font-medium text-frost-200 mb-2">
-          {session.gameMode === "couples" ? "Modalità Coppie" : "Modalità Solitario"}
+          {session.teamSize === 1
+            ? "Modalità Solitario"
+            : session.teamSize === 2
+            ? "Modalità Coppie"
+            : `Squadre da ${session.teamSize} giocatori`}
         </h4>
         <p className="text-sm text-frost-400">
-          {session.gameMode === "couples" ? (
-            <>
-              In modalità coppie, ogni squadra è composta da 2 giocatori che
-              condividono lo stesso percorso e progresso. Entrambi i membri
-              possono visualizzare e interagire con la sessione di gioco.
-            </>
-          ) : (
+          {session.teamSize === 1 ? (
             <>
               In modalità solitario, ogni giocatore partecipa individualmente.
               Le squadre sono create automaticamente per ogni giocatore.
+            </>
+          ) : (
+            <>
+              Ogni squadra è composta da {session.teamSize} giocatori che
+              condividono lo stesso percorso e progresso. Tutti i membri
+              possono visualizzare e interagire con la sessione di gioco.
             </>
           )}
         </p>

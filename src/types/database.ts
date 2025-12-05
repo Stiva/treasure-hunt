@@ -1,12 +1,13 @@
 // Types inferred from database schema
-export type GameMode = "solo" | "couples";
-
 export interface Session {
   id: number;
   name: string;
   keyword: string;
-  gameMode: GameMode;
+  teamSize: number;
   isActive: boolean;
+  adminDisplayName: string | null;
+  victoryMessageIt: string | null;
+  victoryMessageEn: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

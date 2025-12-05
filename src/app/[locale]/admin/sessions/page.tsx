@@ -92,7 +92,11 @@ export default async function SessionsPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Users className="h-4 w-4" />
-                        {session.gameMode === "couples" ? t("couples") : t("solo")}
+                        {session.teamSize === 1
+                          ? t("solo")
+                          : session.teamSize === 2
+                          ? t("couples")
+                          : `${session.teamSize} ${t("playersLabel")}`}
                       </span>
                     </div>
                   </div>

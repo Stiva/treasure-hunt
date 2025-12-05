@@ -12,13 +12,19 @@ export interface ApiResponse<T = unknown> {
 export interface CreateSessionRequest {
   name: string;
   keyword: string;
-  gameMode: "solo" | "couples";
+  teamSize: number;
+  adminDisplayName?: string;
+  victoryMessageIt?: string;
+  victoryMessageEn?: string;
 }
 
 export interface UpdateSessionRequest {
   name?: string;
   keyword?: string;
-  gameMode?: "solo" | "couples";
+  teamSize?: number;
+  adminDisplayName?: string | null;
+  victoryMessageIt?: string;
+  victoryMessageEn?: string;
 }
 
 // Location API

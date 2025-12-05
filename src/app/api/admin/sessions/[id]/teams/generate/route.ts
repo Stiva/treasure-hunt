@@ -78,8 +78,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const existingTeams = await getTeamsBySessionId(sessionId);
     let teamNumber = existingTeams.length + 1;
 
-    // Create teams based on game mode
-    const playersPerTeam = session.gameMode === "couples" ? 2 : 1;
+    // Create teams based on team size
+    const playersPerTeam = session.teamSize;
     const createdTeams: Array<{ name: string; players: string[] }> = [];
 
     for (let i = 0; i < players.length; i += playersPerTeam) {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         // Solo mode: use player name
         teamName = `${teamPlayers[0].firstName} ${teamPlayers[0].lastName}`;
       } else {
-        // Couples mode: use team number
+        // Team mode: use team number
         teamName = `Squadra ${teamNumber}`;
         teamNumber++;
       }
@@ -114,16 +114,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       });
     }
 
-    // Count unassigned (in case of odd number in couples mode)
-    const remainingUnassigned =
-      session.gameMode === "couples" && players.length % 2 === 1 ? 1 : 0;
+    // All players are assigned (including incomplete teams)
 
     return successResponse(
       {
         teamsCreated: createdTeams.length,
         teams: createdTeams,
-        playersAssigned: players.length - remainingUnassigned,
-        unassignedRemaining: remainingUnassigned,
+        playersAssigned: players.length,
       },
       `${createdTeams.length} squadre create con successo`,
       201

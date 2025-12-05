@@ -409,7 +409,7 @@ export function TeamsManager({
                 )}
                 <div className="mt-3 pt-3 border-t border-night-700">
                   <p className="text-xs text-frost-500">
-                    {team.players.length} / {session.gameMode === "couples" ? "2" : "1"} giocatori
+                    {team.players.length} / {session.teamSize} giocatori
                   </p>
                 </div>
                 {/* Team Path Display */}

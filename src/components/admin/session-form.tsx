@@ -20,10 +20,15 @@ export function SessionForm({ session, locale }: SessionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Determine initial teamSize selection
+  const initialTeamSize = session?.teamSize ?? 2;
+  const isCustomSize = initialTeamSize > 4;
+
   const [formData, setFormData] = useState({
     name: session?.name || "",
     keyword: session?.keyword || "",
-    gameMode: session?.gameMode || "couples",
+    teamSize: initialTeamSize,
+    teamSizeSelection: isCustomSize ? "custom" : String(initialTeamSize),
     adminDisplayName: session?.adminDisplayName || "",
     victoryMessageIt: session?.victoryMessageIt || "",
     victoryMessageEn: session?.victoryMessageEn || "",
@@ -43,7 +48,14 @@ export function SessionForm({ session, locale }: SessionFormProps) {
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          keyword: formData.keyword,
+          teamSize: formData.teamSize,
+          adminDisplayName: formData.adminDisplayName,
+          victoryMessageIt: formData.victoryMessageIt,
+          victoryMessageEn: formData.victoryMessageEn,
+        }),
       });
 
       const data = await response.json();
@@ -115,28 +127,61 @@ export function SessionForm({ session, locale }: SessionFormProps) {
             </p>
           </div>
 
-          {/* Game Mode */}
+          {/* Team Size */}
           <div className="space-y-2">
-            <Label htmlFor="gameMode" required>
-              {t("gameMode")}
+            <Label htmlFor="teamSize" required>
+              {t("teamSize")}
             </Label>
-            <Select
-              id="gameMode"
-              value={formData.gameMode}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  gameMode: e.target.value as "solo" | "couples",
-                })
-              }
-            >
-              <option value="couples">{t("couples")}</option>
-              <option value="solo">{t("solo")}</option>
-            </Select>
+            <div className="flex gap-3">
+              <Select
+                id="teamSize"
+                value={formData.teamSizeSelection}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "custom") {
+                    setFormData({
+                      ...formData,
+                      teamSizeSelection: "custom",
+                      teamSize: formData.teamSize > 4 ? formData.teamSize : 5,
+                    });
+                  } else {
+                    setFormData({
+                      ...formData,
+                      teamSizeSelection: value,
+                      teamSize: parseInt(value),
+                    });
+                  }
+                }}
+                className="flex-1"
+              >
+                <option value="1">{t("solo")}</option>
+                <option value="2">{t("couples")}</option>
+                <option value="3">3 {t("playersLabel")}</option>
+                <option value="4">4 {t("playersLabel")}</option>
+                <option value="custom">{t("custom")}</option>
+              </Select>
+              {formData.teamSizeSelection === "custom" && (
+                <Input
+                  type="number"
+                  min={5}
+                  value={formData.teamSize}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      teamSize: Math.max(1, parseInt(e.target.value) || 1),
+                    })
+                  }
+                  className="w-24"
+                  placeholder="5+"
+                />
+              )}
+            </div>
             <p className="text-xs text-frost-500">
-              {formData.gameMode === "couples"
+              {formData.teamSize === 1
+                ? "Ogni giocatore partecipa singolarmente con il proprio percorso."
+                : formData.teamSize === 2
                 ? "I giocatori saranno organizzati in coppie che condividono lo stesso percorso."
-                : "Ogni giocatore partecipa singolarmente con il proprio percorso."}
+                : `I giocatori saranno organizzati in squadre di ${formData.teamSize} persone.`}
             </p>
           </div>
 

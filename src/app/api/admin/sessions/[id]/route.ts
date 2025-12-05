@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return errorResponse(validation.error.issues[0].message);
     }
 
-    const { name, keyword, gameMode, adminDisplayName, victoryMessageIt, victoryMessageEn } = validation.data;
+    const { name, keyword, teamSize, adminDisplayName, victoryMessageIt, victoryMessageEn } = validation.data;
 
     // Check if session exists
     const existingSession = await getSessionById(sessionId);
@@ -87,7 +87,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updatedSession = await updateSession(sessionId, {
       name,
       keyword,
-      gameMode,
+      teamSize,
       adminDisplayName,
       victoryMessageIt,
       victoryMessageEn,

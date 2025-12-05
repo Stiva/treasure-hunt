@@ -129,7 +129,7 @@ export async function GET() {
         ? {
             id: session.id,
             name: session.name,
-            gameMode: session.gameMode,
+            teamSize: session.teamSize,
             isActive: session.isActive,
           }
         : null,
