@@ -33,8 +33,17 @@ export function SessionForm({ session, locale }: SessionFormProps) {
     adminDisplayName: session?.adminDisplayName || "",
     victoryMessageIt: session?.victoryMessageIt || "",
     victoryMessageEn: session?.victoryMessageEn || "",
-    helpContentIt: (session?.helpContentIt as HelpContent | null) || null,
-    helpContentEn: (session?.helpContentEn as HelpContent | null) || null,
+  });
+
+  // Stato separato per le stringhe raw delle textarea help content
+  // Questo evita il bug del cursore che salta alla fine ad ogni keystroke
+  const [helpTexts, setHelpTexts] = useState({
+    rulesIt: (session?.helpContentIt as HelpContent | null)?.rules?.join("\n") || "",
+    stepsIt: (session?.helpContentIt as HelpContent | null)?.steps?.join("\n") || "",
+    tipsIt: (session?.helpContentIt as HelpContent | null)?.tips?.join("\n") || "",
+    rulesEn: (session?.helpContentEn as HelpContent | null)?.rules?.join("\n") || "",
+    stepsEn: (session?.helpContentEn as HelpContent | null)?.steps?.join("\n") || "",
+    tipsEn: (session?.helpContentEn as HelpContent | null)?.tips?.join("\n") || "",
   });
 
   // State for collapsible help content section
@@ -42,36 +51,37 @@ export function SessionForm({ session, locale }: SessionFormProps) {
     !!(session?.helpContentIt || session?.helpContentEn)
   );
 
-  // Helper to update help content
-  const updateHelpContent = (
-    lang: "it" | "en",
-    section: keyof HelpContent,
-    value: string
-  ) => {
-    const lines = value.split("\n").filter((line) => line.trim());
-    const field = lang === "it" ? "helpContentIt" : "helpContentEn";
-    const currentContent = formData[field] || { rules: [], steps: [], tips: [] };
-    setFormData({
-      ...formData,
-      [field]: {
-        ...currentContent,
-        [section]: lines,
-      },
-    });
+  // Helper per convertire stringa in array (usato solo al submit)
+  const parseHelpContent = (text: string): string[] => {
+    return text.split("\n").filter((line) => line.trim());
   };
 
-  // Helper to get textarea value from help content array
-  const getHelpContentText = (lang: "it" | "en", section: keyof HelpContent): string => {
-    const field = lang === "it" ? "helpContentIt" : "helpContentEn";
-    const content = formData[field];
-    if (!content || !content[section]) return "";
-    return content[section].join("\n");
-  };
+  // Check if any help content is configured
+  const hasHelpContent =
+    helpTexts.rulesIt || helpTexts.stepsIt || helpTexts.tipsIt ||
+    helpTexts.rulesEn || helpTexts.stepsEn || helpTexts.tipsEn;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    // Costruisci helpContent dagli stati stringa (conversione solo al submit)
+    const helpContentIt = (helpTexts.rulesIt || helpTexts.stepsIt || helpTexts.tipsIt)
+      ? {
+          rules: parseHelpContent(helpTexts.rulesIt),
+          steps: parseHelpContent(helpTexts.stepsIt),
+          tips: parseHelpContent(helpTexts.tipsIt),
+        }
+      : null;
+
+    const helpContentEn = (helpTexts.rulesEn || helpTexts.stepsEn || helpTexts.tipsEn)
+      ? {
+          rules: parseHelpContent(helpTexts.rulesEn),
+          steps: parseHelpContent(helpTexts.stepsEn),
+          tips: parseHelpContent(helpTexts.tipsEn),
+        }
+      : null;
 
     try {
       const url = isEditing
@@ -89,8 +99,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
           adminDisplayName: formData.adminDisplayName,
           victoryMessageIt: formData.victoryMessageIt,
           victoryMessageEn: formData.victoryMessageEn,
-          helpContentIt: formData.helpContentIt,
-          helpContentEn: formData.helpContentEn,
+          helpContentIt,
+          helpContentEn,
         }),
       });
 
@@ -297,9 +307,7 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                 Personalizza &quot;Come si Gioca&quot;
               </span>
               <span className="text-xs text-frost-500 ml-auto">
-                {formData.helpContentIt || formData.helpContentEn
-                  ? "Personalizzato"
-                  : "Default"}
+                {hasHelpContent ? "Personalizzato" : "Default"}
               </span>
             </button>
 
@@ -320,8 +328,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                     <Label htmlFor="helpRulesIt">Regole del Gioco</Label>
                     <Textarea
                       id="helpRulesIt"
-                      value={getHelpContentText("it", "rules")}
-                      onChange={(e) => updateHelpContent("it", "rules", e.target.value)}
+                      value={helpTexts.rulesIt}
+                      onChange={(e) => setHelpTexts({ ...helpTexts, rulesIt: e.target.value })}
                       placeholder="Una regola per riga...&#10;Es: La caccia si svolge a squadre&#10;Ogni tappa ha un indovinello da risolvere"
                       rows={5}
                     />
@@ -334,8 +342,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                     <Label htmlFor="helpStepsIt">Come Giocare</Label>
                     <Textarea
                       id="helpStepsIt"
-                      value={getHelpContentText("it", "steps")}
-                      onChange={(e) => updateHelpContent("it", "steps", e.target.value)}
+                      value={helpTexts.stepsIt}
+                      onChange={(e) => setHelpTexts({ ...helpTexts, stepsIt: e.target.value })}
                       placeholder="Un passo per riga...&#10;Es: Leggi l'indovinello&#10;Trova il luogo descritto"
                       rows={5}
                     />
@@ -348,8 +356,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                     <Label htmlFor="helpTipsIt">Suggerimenti</Label>
                     <Textarea
                       id="helpTipsIt"
-                      value={getHelpContentText("it", "tips")}
-                      onChange={(e) => updateHelpContent("it", "tips", e.target.value)}
+                      value={helpTexts.tipsIt}
+                      onChange={(e) => setHelpTexts({ ...helpTexts, tipsIt: e.target.value })}
                       placeholder="Un suggerimento per riga...&#10;Es: Usa gli indizi se sei bloccato&#10;Non correre, goditi l'avventura!"
                       rows={3}
                     />
@@ -369,8 +377,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                     <Label htmlFor="helpRulesEn">Game Rules</Label>
                     <Textarea
                       id="helpRulesEn"
-                      value={getHelpContentText("en", "rules")}
-                      onChange={(e) => updateHelpContent("en", "rules", e.target.value)}
+                      value={helpTexts.rulesEn}
+                      onChange={(e) => setHelpTexts({ ...helpTexts, rulesEn: e.target.value })}
                       placeholder="One rule per line...&#10;E.g.: The hunt is played in teams&#10;Each stage has a riddle to solve"
                       rows={5}
                     />
@@ -383,8 +391,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                     <Label htmlFor="helpStepsEn">How to Play</Label>
                     <Textarea
                       id="helpStepsEn"
-                      value={getHelpContentText("en", "steps")}
-                      onChange={(e) => updateHelpContent("en", "steps", e.target.value)}
+                      value={helpTexts.stepsEn}
+                      onChange={(e) => setHelpTexts({ ...helpTexts, stepsEn: e.target.value })}
                       placeholder="One step per line...&#10;E.g.: Read the riddle&#10;Find the described location"
                       rows={5}
                     />
@@ -397,8 +405,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
                     <Label htmlFor="helpTipsEn">Tips</Label>
                     <Textarea
                       id="helpTipsEn"
-                      value={getHelpContentText("en", "tips")}
-                      onChange={(e) => updateHelpContent("en", "tips", e.target.value)}
+                      value={helpTexts.tipsEn}
+                      onChange={(e) => setHelpTexts({ ...helpTexts, tipsEn: e.target.value })}
                       placeholder="One tip per line...&#10;E.g.: Use hints if you're stuck&#10;Don't rush, enjoy the adventure!"
                       rows={3}
                     />
