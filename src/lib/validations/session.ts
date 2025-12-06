@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+// Schema for customizable help content
+export const helpContentSchema = z.object({
+  rules: z.array(z.string()).default([]),
+  steps: z.array(z.string()).default([]),
+  tips: z.array(z.string()).default([]),
+}).nullable().optional();
+
 export const createSessionSchema = z.object({
   name: z
     .string()
@@ -17,6 +24,8 @@ export const createSessionSchema = z.object({
   adminDisplayName: z.string().max(100, "Il nome è troppo lungo").optional(),
   victoryMessageIt: z.string().max(2000, "Il messaggio è troppo lungo").optional(),
   victoryMessageEn: z.string().max(2000, "The message is too long").optional(),
+  helpContentIt: helpContentSchema,
+  helpContentEn: helpContentSchema,
 });
 
 export const updateSessionSchema = z.object({
@@ -38,6 +47,8 @@ export const updateSessionSchema = z.object({
   adminDisplayName: z.string().max(100, "Il nome è troppo lungo").optional().nullable(),
   victoryMessageIt: z.string().max(2000, "Il messaggio è troppo lungo").optional(),
   victoryMessageEn: z.string().max(2000, "The message is too long").optional(),
+  helpContentIt: helpContentSchema,
+  helpContentEn: helpContentSchema,
 });
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;

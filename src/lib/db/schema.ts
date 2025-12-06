@@ -30,6 +30,8 @@ export const sessions = pgTable(
     adminDisplayName: varchar("admin_display_name", { length: 100 }),
     victoryMessageIt: text("victory_message_it"),
     victoryMessageEn: text("victory_message_en"),
+    helpContentIt: jsonb("help_content_it"),
+    helpContentEn: jsonb("help_content_en"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

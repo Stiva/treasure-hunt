@@ -103,7 +103,7 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
 
   const selectedThread = threads.find((t) => t.teamId === selectedTeamId);
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, attachmentUrl?: string, attachmentType?: string) => {
     if (!selectedTeamId) return;
 
     try {
@@ -113,6 +113,8 @@ export function SupportPanel({ sessionId }: SupportPanelProps) {
         body: JSON.stringify({
           teamId: selectedTeamId,
           message,
+          attachmentUrl,
+          attachmentType,
         }),
       });
 

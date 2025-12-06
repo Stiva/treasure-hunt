@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       return errorResponse(validation.error.issues[0].message);
     }
 
-    const { name, keyword, teamSize, adminDisplayName, victoryMessageIt, victoryMessageEn } = validation.data;
+    const { name, keyword, teamSize, adminDisplayName, victoryMessageIt, victoryMessageEn, helpContentIt, helpContentEn } = validation.data;
 
     // Check if keyword is unique
     const isUnique = await isKeywordUnique(keyword);
@@ -58,6 +58,8 @@ export async function POST(request: NextRequest) {
       adminDisplayName,
       victoryMessageIt,
       victoryMessageEn,
+      helpContentIt,
+      helpContentEn,
     });
 
     return successResponse(session, "Sessione creata con successo", 201);

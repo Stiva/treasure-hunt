@@ -1,4 +1,12 @@
 // Types inferred from database schema
+
+// Help content structure for customizable help pages
+export interface HelpContent {
+  rules: string[];
+  steps: string[];
+  tips: string[];
+}
+
 export interface Session {
   id: number;
   name: string;
@@ -8,6 +16,8 @@ export interface Session {
   adminDisplayName: string | null;
   victoryMessageIt: string | null;
   victoryMessageEn: string | null;
+  helpContentIt: HelpContent | null;
+  helpContentEn: HelpContent | null;
   createdAt: Date;
   updatedAt: Date;
 }

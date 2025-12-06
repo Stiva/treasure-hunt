@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button, Input, Label, Select, Card, CardContent, Textarea } from "@/components/ui";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronDown, ChevronRight, BookOpen } from "lucide-react";
+import type { HelpContent } from "@/types/database";
 import type { Session } from "@/lib/db/schema";
 
 interface SessionFormProps {
@@ -32,7 +33,40 @@ export function SessionForm({ session, locale }: SessionFormProps) {
     adminDisplayName: session?.adminDisplayName || "",
     victoryMessageIt: session?.victoryMessageIt || "",
     victoryMessageEn: session?.victoryMessageEn || "",
+    helpContentIt: (session?.helpContentIt as HelpContent | null) || null,
+    helpContentEn: (session?.helpContentEn as HelpContent | null) || null,
   });
+
+  // State for collapsible help content section
+  const [showHelpContent, setShowHelpContent] = useState(
+    !!(session?.helpContentIt || session?.helpContentEn)
+  );
+
+  // Helper to update help content
+  const updateHelpContent = (
+    lang: "it" | "en",
+    section: keyof HelpContent,
+    value: string
+  ) => {
+    const lines = value.split("\n").filter((line) => line.trim());
+    const field = lang === "it" ? "helpContentIt" : "helpContentEn";
+    const currentContent = formData[field] || { rules: [], steps: [], tips: [] };
+    setFormData({
+      ...formData,
+      [field]: {
+        ...currentContent,
+        [section]: lines,
+      },
+    });
+  };
+
+  // Helper to get textarea value from help content array
+  const getHelpContentText = (lang: "it" | "en", section: keyof HelpContent): string => {
+    const field = lang === "it" ? "helpContentIt" : "helpContentEn";
+    const content = formData[field];
+    if (!content || !content[section]) return "";
+    return content[section].join("\n");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +89,8 @@ export function SessionForm({ session, locale }: SessionFormProps) {
           adminDisplayName: formData.adminDisplayName,
           victoryMessageIt: formData.victoryMessageIt,
           victoryMessageEn: formData.victoryMessageEn,
+          helpContentIt: formData.helpContentIt,
+          helpContentEn: formData.helpContentEn,
         }),
       });
 
@@ -242,6 +278,137 @@ export function SessionForm({ session, locale }: SessionFormProps) {
               Message shown to players when they complete the treasure hunt.
               Leave empty to use the default message.
             </p>
+          </div>
+
+          {/* Help Content Section - Collapsible */}
+          <div className="border border-night-700 rounded-lg overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowHelpContent(!showHelpContent)}
+              className="w-full flex items-center gap-3 p-4 bg-night-800/50 hover:bg-night-800 transition-colors text-left"
+            >
+              {showHelpContent ? (
+                <ChevronDown className="h-5 w-5 text-frost-400" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-frost-400" />
+              )}
+              <BookOpen className="h-5 w-5 text-frost-400" />
+              <span className="font-medium text-frost-200">
+                Personalizza &quot;Come si Gioca&quot;
+              </span>
+              <span className="text-xs text-frost-500 ml-auto">
+                {formData.helpContentIt || formData.helpContentEn
+                  ? "Personalizzato"
+                  : "Default"}
+              </span>
+            </button>
+
+            {showHelpContent && (
+              <div className="p-4 space-y-6 bg-night-900/30">
+                <p className="text-sm text-frost-400">
+                  Personalizza i contenuti della pagina &quot;Come si Gioca&quot; per questa sessione.
+                  Lascia vuoto per usare i testi predefiniti.
+                </p>
+
+                {/* Italian Help Content */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-frost-300 border-b border-night-700 pb-2">
+                    🇮🇹 Italiano
+                  </h4>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="helpRulesIt">Regole del Gioco</Label>
+                    <Textarea
+                      id="helpRulesIt"
+                      value={getHelpContentText("it", "rules")}
+                      onChange={(e) => updateHelpContent("it", "rules", e.target.value)}
+                      placeholder="Una regola per riga...&#10;Es: La caccia si svolge a squadre&#10;Ogni tappa ha un indovinello da risolvere"
+                      rows={5}
+                    />
+                    <p className="text-xs text-frost-500">
+                      Una regola per riga. Saranno mostrate come lista numerata.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="helpStepsIt">Come Giocare</Label>
+                    <Textarea
+                      id="helpStepsIt"
+                      value={getHelpContentText("it", "steps")}
+                      onChange={(e) => updateHelpContent("it", "steps", e.target.value)}
+                      placeholder="Un passo per riga...&#10;Es: Leggi l'indovinello&#10;Trova il luogo descritto"
+                      rows={5}
+                    />
+                    <p className="text-xs text-frost-500">
+                      Un passo per riga. Saranno mostrati come istruzioni numerate.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="helpTipsIt">Suggerimenti</Label>
+                    <Textarea
+                      id="helpTipsIt"
+                      value={getHelpContentText("it", "tips")}
+                      onChange={(e) => updateHelpContent("it", "tips", e.target.value)}
+                      placeholder="Un suggerimento per riga...&#10;Es: Usa gli indizi se sei bloccato&#10;Non correre, goditi l'avventura!"
+                      rows={3}
+                    />
+                    <p className="text-xs text-frost-500">
+                      Un suggerimento per riga. Saranno mostrati in riquadri evidenziati.
+                    </p>
+                  </div>
+                </div>
+
+                {/* English Help Content */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-frost-300 border-b border-night-700 pb-2">
+                    🇬🇧 English
+                  </h4>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="helpRulesEn">Game Rules</Label>
+                    <Textarea
+                      id="helpRulesEn"
+                      value={getHelpContentText("en", "rules")}
+                      onChange={(e) => updateHelpContent("en", "rules", e.target.value)}
+                      placeholder="One rule per line...&#10;E.g.: The hunt is played in teams&#10;Each stage has a riddle to solve"
+                      rows={5}
+                    />
+                    <p className="text-xs text-frost-500">
+                      One rule per line. Will be shown as a numbered list.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="helpStepsEn">How to Play</Label>
+                    <Textarea
+                      id="helpStepsEn"
+                      value={getHelpContentText("en", "steps")}
+                      onChange={(e) => updateHelpContent("en", "steps", e.target.value)}
+                      placeholder="One step per line...&#10;E.g.: Read the riddle&#10;Find the described location"
+                      rows={5}
+                    />
+                    <p className="text-xs text-frost-500">
+                      One step per line. Will be shown as numbered instructions.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="helpTipsEn">Tips</Label>
+                    <Textarea
+                      id="helpTipsEn"
+                      value={getHelpContentText("en", "tips")}
+                      onChange={(e) => updateHelpContent("en", "tips", e.target.value)}
+                      placeholder="One tip per line...&#10;E.g.: Use hints if you're stuck&#10;Don't rush, enjoy the adventure!"
+                      rows={3}
+                    />
+                    <p className="text-xs text-frost-500">
+                      One tip per line. Will be shown in highlighted boxes.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}

@@ -13,7 +13,9 @@ import {
   Loader2,
   Sun,
   Moon,
+  BookOpen,
 } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { useTheme } from "next-themes";
 import { ChatModal } from "./chat-modal";
 
@@ -60,6 +62,7 @@ export function PlayerMenu({
   const t = {
     map: locale === "it" ? "Mappa" : "Map",
     support: locale === "it" ? "Supporto" : "Support",
+    help: locale === "it" ? "Come si gioca" : "How to play",
     refresh: locale === "it" ? "Aggiorna" : "Refresh",
     logout: locale === "it" ? "Esci" : "Logout",
     gpsActive: locale === "it" ? "GPS attivo" : "GPS active",
@@ -197,6 +200,16 @@ export function PlayerMenu({
                 </span>
               )}
             </button>
+
+            {/* Come si gioca / How to play */}
+            <Link
+              href="/play/help"
+              onClick={() => setIsOpen(false)}
+              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted transition-colors text-left border-t border-border"
+            >
+              <BookOpen className="h-5 w-5 text-muted-foreground" />
+              <span className="text-foreground">{t.help}</span>
+            </Link>
 
             {/* Refresh */}
             <button

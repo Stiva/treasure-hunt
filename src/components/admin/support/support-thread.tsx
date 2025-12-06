@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, MapPin, Flag, Navigation } from "lucide-react";
+import { Send, Loader2, MapPin, Flag, Navigation, Paperclip, X, Video } from "lucide-react";
 import { Button, Input } from "@/components/ui";
 
 interface Message {
@@ -43,7 +43,7 @@ interface TeamThread {
 
 interface SupportThreadProps {
   thread: TeamThread;
-  onSendMessage: (message: string) => Promise<void>;
+  onSendMessage: (message: string, attachmentUrl?: string, attachmentType?: string) => Promise<void>;
   onToggleGpsHint: (teamId: number, enabled: boolean) => Promise<void>;
 }
 
@@ -51,7 +51,14 @@ export function SupportThread({ thread, onSendMessage, onToggleGpsHint }: Suppor
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isTogglingGps, setIsTogglingGps] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [attachment, setAttachment] = useState<{
+    url: string;
+    type: "image" | "video";
+  } | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -61,13 +68,70 @@ export function SupportThread({ thread, onSendMessage, onToggleGpsHint }: Suppor
     scrollToBottom();
   }, [thread.messages]);
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      setUploadError("Tipo di file non supportato. Usa immagini o video.");
+      return;
+    }
+
+    // Validate file size (10MB for images, 100MB for videos)
+    const maxSize = file.type.startsWith("video/") ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const maxSizeMB = maxSize / (1024 * 1024);
+      setUploadError(`File troppo grande. Massimo ${maxSizeMB}MB.`);
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setAttachment({
+          url: data.data.url,
+          type: data.data.type,
+        });
+      } else {
+        setUploadError(data.error || "Errore nel caricamento del file");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      setUploadError("Errore nel caricamento del file");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSend = async () => {
-    if (!newMessage.trim() || isSending) return;
+    if ((!newMessage.trim() && !attachment) || isSending) return;
 
     setIsSending(true);
     try {
-      await onSendMessage(newMessage.trim());
+      await onSendMessage(
+        newMessage.trim() || (attachment ? "📎" : ""),
+        attachment?.url,
+        attachment?.type
+      );
       setNewMessage("");
+      setAttachment(null);
     } finally {
       setIsSending(false);
     }
@@ -273,9 +337,63 @@ export function SupportThread({ thread, onSendMessage, onToggleGpsHint }: Suppor
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Upload error */}
+      {uploadError && (
+        <div className="px-4 py-2 bg-red-500/10 text-red-400 text-sm text-center">
+          {uploadError}
+        </div>
+      )}
+
+      {/* Attachment preview */}
+      {attachment && (
+        <div className="px-4 py-2 border-t border-frost-500/20 bg-night-700">
+          <div className="relative inline-block">
+            {attachment.type === "image" ? (
+              <img
+                src={attachment.url}
+                alt="Anteprima"
+                className="h-16 w-16 object-cover rounded-lg"
+              />
+            ) : (
+              <div className="h-16 w-16 bg-night-800 rounded-lg flex items-center justify-center">
+                <Video className="h-8 w-8 text-frost-400" />
+              </div>
+            )}
+            <button
+              onClick={() => setAttachment(null)}
+              className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors"
+            >
+              <X className="h-3 w-3 text-white" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <div className="p-4 border-t border-frost-500/20">
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-end">
+          {/* File input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="flex-shrink-0"
+          >
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Paperclip className="h-4 w-4" />
+            )}
+          </Button>
+
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -286,7 +404,7 @@ export function SupportThread({ thread, onSendMessage, onToggleGpsHint }: Suppor
           />
           <Button
             onClick={handleSend}
-            disabled={!newMessage.trim() || isSending}
+            disabled={(!newMessage.trim() && !attachment) || isSending}
           >
             {isSending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -16,6 +16,9 @@ import {
   Trophy,
   Clock,
 } from "lucide-react";
+import { getCurrentPlayer } from "@/lib/utils/player-session";
+import { getSessionById } from "@/lib/db/queries";
+import type { HelpContent } from "@/types/database";
 
 interface HelpPageProps {
   params: Promise<{ locale: string }>;
@@ -24,6 +27,44 @@ interface HelpPageProps {
 export default async function HelpPage({ params }: HelpPageProps) {
   const { locale } = await params;
   const t = await getTranslations("help");
+
+  // Try to get session-specific help content
+  let helpContent: HelpContent | null = null;
+  let teamSize = 2; // default
+
+  const playerData = await getCurrentPlayer();
+  if (playerData?.player) {
+    const session = await getSessionById(playerData.player.sessionId);
+    if (session) {
+      teamSize = session.teamSize;
+      const content = locale === "it"
+        ? session.helpContentIt
+        : session.helpContentEn;
+      if (content) {
+        helpContent = content as HelpContent;
+      }
+    }
+  }
+
+  // Use custom content or fallback to i18n defaults
+  const rules = helpContent?.rules?.length
+    ? helpContent.rules
+    : [t("rule1"), t("rule2"), t("rule3"), t("rule4"), t("rule5"), t("rule6")];
+
+  const steps = helpContent?.steps?.length
+    ? helpContent.steps
+    : [t("step1"), t("step2"), t("step3"), t("step4"), t("step5")];
+
+  const tips = helpContent?.tips?.length
+    ? helpContent.tips
+    : [t("tip1"), t("tip2"), t("tip3")];
+
+  // Team size label
+  const teamSizeLabel = teamSize === 1
+    ? (locale === "it" ? "Singoli" : "Solo")
+    : teamSize === 2
+    ? (locale === "it" ? "A Coppie" : "In Pairs")
+    : (locale === "it" ? `Squadre da ${teamSize}` : `Teams of ${teamSize}`);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-night-950 to-pitch-950 p-4">
@@ -34,7 +75,7 @@ export default async function HelpPage({ params }: HelpPageProps) {
           className="inline-flex items-center gap-2 text-frost-400 hover:text-frost-300 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Torna al gioco
+          {locale === "it" ? "Torna al gioco" : "Back to game"}
         </Link>
 
         {/* Header */}
@@ -52,42 +93,14 @@ export default async function HelpPage({ params }: HelpPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
-                1
-              </span>
-              <p className="text-frost-300">{t("rule1")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
-                2
-              </span>
-              <p className="text-frost-300">{t("rule2")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
-                3
-              </span>
-              <p className="text-frost-300">{t("rule3")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
-                4
-              </span>
-              <p className="text-frost-300">{t("rule4")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
-                5
-              </span>
-              <p className="text-frost-300">{t("rule5")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
-                6
-              </span>
-              <p className="text-frost-300">{t("rule6")}</p>
-            </div>
+            {rules.map((rule, index) => (
+              <div key={index} className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-frost-600 text-white text-sm flex items-center justify-center">
+                  {index + 1}
+                </span>
+                <p className="text-frost-300">{rule}</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -100,36 +113,14 @@ export default async function HelpPage({ params }: HelpPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sand-500 text-pitch-900 text-sm flex items-center justify-center font-medium">
-                1
-              </span>
-              <p className="text-frost-300">{t("step1")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sand-500 text-pitch-900 text-sm flex items-center justify-center font-medium">
-                2
-              </span>
-              <p className="text-frost-300">{t("step2")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sand-500 text-pitch-900 text-sm flex items-center justify-center font-medium">
-                3
-              </span>
-              <p className="text-frost-300">{t("step3")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sand-500 text-pitch-900 text-sm flex items-center justify-center font-medium">
-                4
-              </span>
-              <p className="text-frost-300">{t("step4")}</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sand-500 text-pitch-900 text-sm flex items-center justify-center font-medium">
-                5
-              </span>
-              <p className="text-frost-300">{t("step5")}</p>
-            </div>
+            {steps.map((step, index) => (
+              <div key={index} className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sand-500 text-pitch-900 text-sm flex items-center justify-center font-medium">
+                  {index + 1}
+                </span>
+                <p className="text-frost-300">{step}</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -142,15 +133,11 @@ export default async function HelpPage({ params }: HelpPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="p-3 rounded-lg bg-night-800 border border-night-700">
-              <p className="text-frost-300">{t("tip1")}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-night-800 border border-night-700">
-              <p className="text-frost-300">{t("tip2")}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-night-800 border border-night-700">
-              <p className="text-frost-300">{t("tip3")}</p>
-            </div>
+            {tips.map((tip, index) => (
+              <div key={index} className="p-3 rounded-lg bg-night-800 border border-night-700">
+                <p className="text-frost-300">{tip}</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -158,15 +145,19 @@ export default async function HelpPage({ params }: HelpPageProps) {
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center p-4 rounded-lg bg-pitch-900/50 border border-night-800">
             <Users className="h-8 w-8 mx-auto text-frost-400 mb-2" />
-            <p className="text-sm text-frost-400">A Coppie</p>
+            <p className="text-sm text-frost-400">{teamSizeLabel}</p>
           </div>
           <div className="text-center p-4 rounded-lg bg-pitch-900/50 border border-night-800">
             <Clock className="h-8 w-8 mx-auto text-frost-400 mb-2" />
-            <p className="text-sm text-frost-400">3 min tra indizi</p>
+            <p className="text-sm text-frost-400">
+              {locale === "it" ? "3 min tra indizi" : "3 min between hints"}
+            </p>
           </div>
           <div className="text-center p-4 rounded-lg bg-pitch-900/50 border border-night-800">
             <Trophy className="h-8 w-8 mx-auto text-sand-400 mb-2" />
-            <p className="text-sm text-frost-400">Arrivo Comune</p>
+            <p className="text-sm text-frost-400">
+              {locale === "it" ? "Arrivo Comune" : "Common Finish"}
+            </p>
           </div>
         </div>
       </div>
